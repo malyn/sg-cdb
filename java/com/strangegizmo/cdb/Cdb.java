@@ -84,8 +84,7 @@ public class Cdb {
 		file_ = new RandomAccessFile(filepath, "r");
 
 		/* Read and parse the slot table.  We do not throw an exception
-		 * if this fails; the file might empty, which is not an error.
-		 * */
+		 * if this fails; the file might empty, which is not an error. */
 		try {
 			/* Read the table. */
 			byte[] table = new byte[2048];
@@ -168,7 +167,8 @@ public class Cdb {
 	 * Finds the first record stored under the given key.
 	 *
 	 * @param key The key to search for.
-	 * @return the record store under the given key.
+	 * @return The record store under the given key, or
+	 *  <code>null</code> if no record with that key could be found.
 	 */
 	public final synchronized byte[] find(byte[] key) {
 		findstart(key);
@@ -179,7 +179,8 @@ public class Cdb {
 	 * Finds the next record stored under the given key.
 	 *
 	 * @param key The key to search for.
-	 * @return the record store under the given key.
+	 * @return The next record store under the given key, or
+	 *  <code>null</code> if no record with that key could be found.
 	 */
 	public final synchronized byte[] findnext(byte[] key) {
 		/* There are no keys if we could not read the slot table. */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2006, Michael Alyn Miller <malyn@strangeGizmo.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.strangegizmo.cdb.*;
  * values stored in a constant database.
  *
  * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0.2
+ * @version		1.0.4
  */
 public class dump {
 	public static void main(String[] args) {
@@ -67,11 +67,18 @@ public class dump {
 				byte[] key = element.getKey();
 				byte[] data = element.getData();
 
-				System.out.println(
-					"+" + key.length + "," + data.length +
-					":" + new String(key) + "->" + new String(data));
+				/* Write the line directly to stdout to avoid any
+				 * charset conversion that System.print() might want to
+				 * perform. */
+				System.out.write(
+					("+" + key.length + "," + data.length + ":").getBytes());
+				System.out.write(key);
+				System.out.write('-');
+				System.out.write('>');
+				System.out.write(data);
+				System.out.write('\n');
 			}
-			System.out.println();
+			System.out.write('\n');
 		} catch (IOException ioException) {
 			System.out.println("Couldn't dump CDB file: "
 				+ ioException);

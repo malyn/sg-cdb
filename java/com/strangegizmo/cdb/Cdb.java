@@ -41,7 +41,7 @@ import java.util.*;
  * database.
  *
  * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0.2
+ * @version		1.0.3
  */
 public class Cdb {
 	/** The RandomAccessFile for the CDB file. */
@@ -143,7 +143,11 @@ public class Cdb {
 			long l = h << 5;
 			h += (l & 0x00000000ffffffffL);
 			h = (h & 0x00000000ffffffffL);
-			h = h ^ key[i];
+
+			int k = key[i];
+			k = (k + 0x100) & 0xff;
+
+			h = h ^ k;
 		}
 
 		/* Return the hash value. */
@@ -253,11 +257,19 @@ public class Cdb {
 
 				/* Read the key stored in this entry and compare it to
 				 * the key we were given. */
+				boolean match = true;
 				byte[] k = new byte[klen];
 				file_.readFully(k);
-				for (int i = 0; i < k.length; i++)
-					if (k[i] != key[i])
-						return null;
+				for (int i = 0; i < k.length; i++) {
+					if (k[i] != key[i]) {
+						match = false;
+						break;
+					}
+				}
+
+				/* No match; check the next slot. */
+				if (!match)
+					continue;
 
 				/* The keys match, return the data. */
 				byte[] d = new byte[dlen];

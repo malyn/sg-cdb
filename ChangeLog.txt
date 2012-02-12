@@ -1,0 +1,7 @@
+1.0.3:
+  * Fixed sign bit problem with binary keys (fixed by Eric Kampf).
+  * Fixed findNext to correctly deal with multiple keys mapping to
+    the same value (fixed by Eric Kampf).
+
+1.0.2:
+  * First public release.

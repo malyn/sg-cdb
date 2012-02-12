@@ -6,7 +6,7 @@ JAR = jar
 JAVAC = javac -d ./classes
 JAVADOC = javadoc
 
-VERSION = 1.0.2
+VERSION = 1.0.3
 
 cdb:
 	@if [ ! -d ./classes ]; then mkdir ./classes; fi
@@ -32,6 +32,7 @@ zip: jar doc
 	rm -f releases/sg-cdb-$(VERSION).zip
 	mkdir releases/sg-cdb-$(VERSION)
 
+	cp -R ChangeLog.txt releases/sg-cdb-$(VERSION)
 	cp -R LICENSE releases/sg-cdb-$(VERSION)
 	cp -R sg-cdb-$(VERSION).jar releases/sg-cdb-$(VERSION)
 	cp -R java releases/sg-cdb-$(VERSION)

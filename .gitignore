@@ -1,0 +1,6 @@
+classes
+doc
+releases
+*.jar
+*.pyc
+*.pyo

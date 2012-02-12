@@ -3,10 +3,10 @@
 # All rights reserved.
 
 JAR = jar
-JAVAC = javac -d ./classes
+JAVAC = javac -source 1.2 -target 1.1 -d ./classes
 JAVADOC = javadoc
 
-VERSION = 1.0.3
+VERSION = 1.0.4
 
 cdb:
 	@if [ ! -d ./classes ]; then mkdir ./classes; fi

@@ -6,7 +6,7 @@ version = '1.0.5'
 jar {
     manifest {
         attributes(
-                'Main-Class': 'cdb.dump'
+                'Main-Class': 'cdb.main'
         )
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2006, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,53 +34,45 @@ package cdb;
 
 /* Java imports. */
 import java.io.*;
-import java.util.*;
 
-/* strangeGizmo imports. */
+/* TRE imports. */
 import com.strangegizmo.cdb.*;
 
 /**
- * The cdb.dump program is a command-line tool which is used to dump the
- * values stored in a constant database.
+ * The cdb.make program is a command-line tool which is used to create a
+ * constant database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0.4
+ * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * @version		1.0
  */
-public class dump {
+public class make {
 	public static void main(String[] args) {
 		/* Display a usage message if we didn't get the correct number
 		 * of arguments. */
-		if (args.length != 1) {
-			System.out.println("cdb.dump: usage: cdb.dump file");
+		if (args.length < 2) {
+			System.out.println("cdb.make: usage: cdb.make cdb_file temp_file [ignoreCdb]");
 			return;
 		}
-
 		/* Decode our arguments. */
 		String cdbFile = args[0];
+		String tempFile = args[1];
 		
-		/* Dump the CDB file. */
-		try {
-			Enumeration e = Cdb.elements(cdbFile);
-			while (e.hasMoreElements())  {
-				/* Get the element and its component parts. */
-				CdbElement element = (CdbElement)e.nextElement();
-				byte[] key = element.getKey();
-				byte[] data = element.getData();
-
-				/* Write the line directly to stdout to avoid any
-				 * charset conversion that System.print() might want to
-				 * perform. */
-				System.out.write(
-					("+" + key.length + "," + data.length + ":").getBytes());
-				System.out.write(key);
-				System.out.write('-');
-				System.out.write('>');
-				System.out.write(data);
-				System.out.write('\n');
+		/* Load the ignoreCdb if requested. */
+		Cdb ignoreCdb = null;
+		if ( args.length > 3 ) {
+			try {
+				ignoreCdb = new Cdb(args[2]);
+			} catch (IOException ioException) {
+				System.out.println("Couldn't load `ignore' CDB file: "
+					+ ioException);
 			}
-			System.out.write('\n');
+		}
+
+		/* Create the CDB file. */
+		try {
+			CdbMake.make(System.in, cdbFile, tempFile, ignoreCdb);
 		} catch (IOException ioException) {
-			System.out.println("Couldn't dump CDB file: "
+			System.out.println("Couldn't create CDB file: "
 				+ ioException);
 		}
 	}

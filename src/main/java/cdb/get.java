@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.strangegizmo.cdb.*;
  * The cdb.get program is a command-line tool which is used to retrieve
  * data from a constant database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
+ * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * @version		1.0
  */
 public class get {

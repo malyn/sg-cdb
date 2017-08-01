@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.util.*;
  * Cdb implements a Java interface to D.&nbsp;J.&nbsp;Bernstein's CDB
  * database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
+ * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * @version		1.0.3
  */
 public class Cdb {

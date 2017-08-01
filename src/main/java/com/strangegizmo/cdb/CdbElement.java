@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,50 +30,50 @@
  * SUCH DAMAGE.
  */
 
-package cdb;
-
-/* Java imports. */
-import java.io.*;
-
-/* TRE imports. */
-import com.strangegizmo.cdb.*;
+package com.strangegizmo.cdb;
 
 /**
- * The cdb.make program is a command-line tool which is used to create a
- * constant database.
+ * CdbElement represents a single element in a constant database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0
+ * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * @version		1.0.2
  */
-public class make {
-	public static void main(String[] args) {
-		/* Display a usage message if we didn't get the correct number
-		 * of arguments. */
-		if (args.length < 2) {
-			System.out.println("cdb.make: usage: cdb.make cdb_file temp_file [ignoreCdb]");
-			return;
-		}
-		/* Decode our arguments. */
-		String cdbFile = args[0];
-		String tempFile = args[1];
-		
-		/* Load the ignoreCdb if requested. */
-		Cdb ignoreCdb = null;
-		if ( args.length > 3 ) {
-			try {
-				ignoreCdb = new Cdb(args[2]);
-			} catch (IOException ioException) {
-				System.out.println("Couldn't load `ignore' CDB file: "
-					+ ioException);
-			}
-		}
+public final class CdbElement {
+	/** The key value for this element. */
+	private byte[] key_ = null;
 
-		/* Create the CDB file. */
-		try {
-			CdbMake.make(System.in, cdbFile, tempFile, ignoreCdb);
-		} catch (IOException ioException) {
-			System.out.println("Couldn't create CDB file: "
-				+ ioException);
-		}
+	/** The data value for this element. */
+	private byte[] data_ = null;
+
+
+	/**
+	 * Creates an instance of the CdbElement class and initializes it
+	 * with the given key and data values.
+	 *
+	 * @param key The key value for this element.
+	 * @param data The data value for this element.
+	 */
+	public CdbElement(byte[] key, byte[] data) {
+		key_ = key;
+		data_ = data;
+	}
+
+
+	/**
+	 * Returns this element's key.
+	 *
+	 * @return This element's key.
+	 */
+	public final byte[] getKey() {
+		return key_;
+	}
+
+	/**
+	 * Returns this element's data.
+	 *
+	 * @return This element's data.
+	 */
+	public final byte[] getData() {
+		return data_;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2006, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,50 +30,58 @@
  * SUCH DAMAGE.
  */
 
-package com.strangegizmo.cdb;
+package cdb;
+
+/* Java imports. */
+import java.io.*;
+import java.util.*;
+
+/* strangeGizmo imports. */
+import com.strangegizmo.cdb.*;
 
 /**
- * CdbElement represents a single element in a constant database.
+ * The cdb.dump program is a command-line tool which is used to dump the
+ * values stored in a constant database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0.2
+ * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * @version		1.0.4
  */
-public final class CdbElement {
-	/** The key value for this element. */
-	private byte[] key_ = null;
+public class dump {
+	public static void main(String[] args) {
+		/* Display a usage message if we didn't get the correct number
+		 * of arguments. */
+		if (args.length != 1) {
+			System.out.println("cdb.dump: usage: cdb.dump file");
+			return;
+		}
 
-	/** The data value for this element. */
-	private byte[] data_ = null;
+		/* Decode our arguments. */
+		String cdbFile = args[0];
+		
+		/* Dump the CDB file. */
+		try {
+			Enumeration e = Cdb.elements(cdbFile);
+			while (e.hasMoreElements())  {
+				/* Get the element and its component parts. */
+				CdbElement element = (CdbElement)e.nextElement();
+				byte[] key = element.getKey();
+				byte[] data = element.getData();
 
-
-	/**
-	 * Creates an instance of the CdbElement class and initializes it
-	 * with the given key and data values.
-	 *
-	 * @param key The key value for this element.
-	 * @param data The data value for this element.
-	 */
-	public CdbElement(byte[] key, byte[] data) {
-		key_ = key;
-		data_ = data;
-	}
-
-
-	/**
-	 * Returns this element's key.
-	 *
-	 * @return This element's key.
-	 */
-	public final byte[] getKey() {
-		return key_;
-	}
-
-	/**
-	 * Returns this element's data.
-	 *
-	 * @return This element's data.
-	 */
-	public final byte[] getData() {
-		return data_;
+				/* Write the line directly to stdout to avoid any
+				 * charset conversion that System.print() might want to
+				 * perform. */
+				System.out.write(
+					("+" + key.length + "," + data.length + ":").getBytes());
+				System.out.write(key);
+				System.out.write('-');
+				System.out.write('>');
+				System.out.write(data);
+				System.out.write('\n');
+			}
+			System.out.write('\n');
+		} catch (IOException ioException) {
+			System.out.println("Couldn't dump CDB file: "
+				+ ioException);
+		}
 	}
 }

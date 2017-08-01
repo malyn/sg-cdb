@@ -21,7 +21,7 @@ public class main {
     }
 
     public static final void main(String[] args) throws Exception {
-        if (args == null && args.length < 1) {
+        if (args == null || args.length < 1) {
             usage(System.out);
             System.exit(-1);
         }

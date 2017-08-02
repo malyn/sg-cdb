@@ -61,27 +61,32 @@ public class dump {
 		/* Dump the CDB file. */
 		try {
 			Enumeration e = Cdb.elements(cdbFile);
-			while (e.hasMoreElements())  {
-				/* Get the element and its component parts. */
-				CdbElement element = (CdbElement)e.nextElement();
-				byte[] key = element.getKey();
-				byte[] data = element.getData();
-
-				/* Write the line directly to stdout to avoid any
-				 * charset conversion that System.print() might want to
-				 * perform. */
-				System.out.write(
-					("+" + key.length + "," + data.length + ":").getBytes());
-				System.out.write(key);
-				System.out.write('-');
-				System.out.write('>');
-				System.out.write(data);
-				System.out.write('\n');
-			}
-			System.out.write('\n');
+			dump(e, System.out);
 		} catch (IOException ioException) {
 			System.out.println("Couldn't dump CDB file: "
 				+ ioException);
 		}
 	}
+
+	public static void dump(Enumeration e, PrintStream out) throws IOException {
+        while (e.hasMoreElements())  {
+				/* Get the element and its component parts. */
+            CdbElement element = (CdbElement)e.nextElement();
+            byte[] key = element.getKey();
+            byte[] data = element.getData();
+
+				/* Write the line directly to stdout to avoid any
+				 * charset conversion that System.print() might want to
+				 * perform. */
+            out.write(
+                    ("+" + key.length + "," + data.length + ":").getBytes());
+            out.write(key);
+            out.write('-');
+            out.write('>');
+            out.write(data);
+            out.write('\n');
+        }
+        out.write('\n');
+        out.flush();
+    }
 }

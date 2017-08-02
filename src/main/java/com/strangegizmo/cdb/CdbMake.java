@@ -422,8 +422,11 @@ public final class CdbMake {
 		/* Rename the data file. */
 		File tmp = new File(tempFilepath);
 		File cdb = new File(cdbFilepath);
-		tmp.renameTo(cdb);
-	}
+        boolean rename = tmp.renameTo(cdb);
+        if (!rename) {
+            throw new IOException("Unable to rename to "+cdb.getAbsolutePath());
+        }
+    }
 }
 
 

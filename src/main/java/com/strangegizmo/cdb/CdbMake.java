@@ -77,7 +77,7 @@ public final class CdbMake {
 	 * @exception java.io.IOException If an error occurs creating the
 	 *  constant database file.
 	 */
-	public void start(String filepath) throws IOException {
+	public void start(File filepath) throws IOException {
 		/* Initialize the class. */
 		hashPointers_ = new Vector();
 		tableCount_ = new int[256];
@@ -258,6 +258,25 @@ public final class CdbMake {
 		make(dataFilepath, cdbFilepath, tempFilepath, null);
 	}
 
+    /**
+     * Builds a CDB file from a CDB-format text file, excluding records
+     * with data matching keys in `ignoreCdb'.
+     *
+     * @param dataFilepath The CDB data file to read.
+     * @param cdbFilepath The CDB file to create.
+     * @param tempFilepath The temporary file to use when creating the
+     *  CDB file.
+     * @param ignoreCdb If the data for an entry matches a key in this
+     *  CDB file, the entry will not be added to the new file.
+     * @exception java.io.IOException if an error occurs rebuilding the
+     *  CDB file.
+     */
+    public static void make(String dataFilepath, String cdbFilepath,
+                            String tempFilepath, Cdb ignoreCdb) throws IOException
+    {
+        make(dataFilepath, new File(cdbFilepath), new File(tempFilepath), ignoreCdb);
+    }
+
 	/**
 	 * Builds a CDB file from a CDB-format text file, excluding records
 	 * with data matching keys in `ignoreCdb'.
@@ -271,8 +290,8 @@ public final class CdbMake {
 	 * @exception java.io.IOException if an error occurs rebuilding the
 	 *  CDB file.
 	 */
-	public static void make(String dataFilepath, String cdbFilepath,
-		String tempFilepath, Cdb ignoreCdb) throws IOException
+	public static void make(String dataFilepath, File cdbFilepath,
+		File tempFilepath, Cdb ignoreCdb) throws IOException
 	{
 		/* Open the data file. */
 		BufferedInputStream in
@@ -302,6 +321,25 @@ public final class CdbMake {
 		make(in, cdbFilepath, tempFilepath, null);
 	}
 
+    /**
+     * Builds a CDB file from a CDB-format InputStream, excluding
+     * records with data matching keys in `ignoreCdb'.
+     *
+     * @param in The InputStream to read.
+     * @param cdbFilepath The CDB file to create.
+     * @param tempFilepath The temporary file to use when creating the
+     *  CDB file.
+     * @param ignoreCdb If the data for an entry matches a key in this
+     *  CDB file, the entry will not be added to the new file.
+     * @exception java.io.IOException if an error occurs rebuilding the
+     *  CDB file.
+     */
+    public static void make(InputStream in, String cdbFilepath,
+                            String tempFilepath, Cdb ignoreCdb) throws IOException {
+        make(in, new File(cdbFilepath), new File(tempFilepath), ignoreCdb);
+    }
+
+
 	/**
 	 * Builds a CDB file from a CDB-format InputStream, excluding
 	 * records with data matching keys in `ignoreCdb'.
@@ -315,8 +353,8 @@ public final class CdbMake {
 	 * @exception java.io.IOException if an error occurs rebuilding the
 	 *  CDB file.
 	 */
-	public static void make(InputStream in, String cdbFilepath,
-		String tempFilepath, Cdb ignoreCdb) throws IOException
+	public static void make(InputStream in, File cdbFilepath,
+		File tempFilepath, Cdb ignoreCdb) throws IOException
 	{
 		/* Create the CdbMake object. */
 		CdbMake cdbMake = new CdbMake();
@@ -420,11 +458,9 @@ public final class CdbMake {
 		cdbMake.finish();
 
 		/* Rename the data file. */
-		File tmp = new File(tempFilepath);
-		File cdb = new File(cdbFilepath);
-        boolean rename = tmp.renameTo(cdb);
+        boolean rename = tempFilepath.renameTo(cdbFilepath);
         if (!rename) {
-            throw new IOException("Unable to rename to "+cdb.getAbsolutePath());
+            throw new IOException("Unable to rename to "+cdbFilepath.getAbsolutePath());
         }
     }
 }

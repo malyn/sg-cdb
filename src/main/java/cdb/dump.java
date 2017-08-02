@@ -68,10 +68,10 @@ public class dump {
 		}
 	}
 
-	public static void dump(Enumeration e, PrintStream out) throws IOException {
+	public static void dump(Enumeration<CdbElement> e, PrintStream out) throws IOException {
         while (e.hasMoreElements())  {
 				/* Get the element and its component parts. */
-            CdbElement element = (CdbElement)e.nextElement();
+            CdbElement element = e.nextElement();
             byte[] key = element.getKey();
             byte[] data = element.getData();
 

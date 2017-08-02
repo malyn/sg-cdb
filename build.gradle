@@ -1,7 +1,19 @@
 apply plugin: 'java'
+apply plugin: 'findbugs'
 
 sourceCompatibility = 1.7
 version = '1.0.5'
+
+// use maven central to get JARs
+repositories {
+    mavenCentral()
+}
+
+// dependencies
+dependencies {
+    testCompile 'junit:junit:4.+'
+    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+}
 
 jar {
     manifest {
@@ -10,3 +22,4 @@ jar {
         )
     }
 }
+

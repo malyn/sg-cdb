@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class CdbMakeTest {
     /** Input Data */
-    private static final String TEST_MAKE = "+3,5:one->Hello" + "\n" +
+    public static final String TEST_MAKE = "+3,5:one->Hello" + "\n" +
             "+3,7:two->Goodbye" +"\n\n";
 
     @Rule

@@ -32,48 +32,47 @@
 
 package cdb;
 
-/* Java imports. */
-import java.io.*;
-
-/* TRE imports. */
+/* strangeGizmo imports. */
 import com.strangegizmo.cdb.*;
 
+import java.nio.charset.Charset;
+
 /**
- * The cdb.make program is a command-line tool which is used to create a
- * constant database.
+ * The cdb.Get program is a command-line tool which is used to retrieve
+ * data from a constant database.
  *
  * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * @version		1.0
  */
-public class make {
-	public static void main(String[] args) {
-		/* Display a usage message if we didn't get the correct number
+public class Get {
+	public static void main(String[] args) throws Exception {
+		/* Display a usage message if we didn't Get the correct number
 		 * of arguments. */
-		if (args.length < 2) {
-			System.out.println("cdb.make: usage: cdb.make cdb_file temp_file [ignoreCdb]");
+		if ((args.length < 2) || (args.length > 3)) {
+			System.out.println("cdb.Get: usage: cdb.Get file key [skip]");
 			return;
 		}
-		/* Decode our arguments. */
-		String cdbFile = args[0];
-		String tempFile = args[1];
-		
-		/* Load the ignoreCdb if requested. */
-		Cdb ignoreCdb = null;
-		if ( args.length > 3 ) {
-			try {
-				ignoreCdb = new Cdb(args[2]);
-			} catch (IOException ioException) {
-				System.out.println("Couldn't load `ignore' CDB file: "
-					+ ioException);
-			}
-		}
 
-		/* Create the CDB file. */
-		try {
-			CdbMake.make(System.in, cdbFile, tempFile, ignoreCdb);
-		} catch (IOException ioException) {
-			System.out.println("Couldn't create CDB file: "
-				+ ioException);
-		}
+		/* Parse the arguments. */
+		String file = args[0];
+		byte[] key = args[1].getBytes(Charset.forName("US-ASCII"));
+		int skip = 0;
+		if (args.length == 3)
+			skip = Integer.parseInt(args[2]);
+
+		/* Create the CDB object. */
+		Cdb cdb = new Cdb(file);
+		cdb.findstart(key);
+
+		/* Fetch the data. */
+		byte[] data;
+		do {
+			data = cdb.findnext(key);
+			if (data == null ) return;
+		} while (skip-- != 0);
+
+		/* Display the data. */
+		System.out.write(data);
+		System.out.flush();
 	}
 }

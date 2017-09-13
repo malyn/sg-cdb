@@ -44,6 +44,7 @@ import java.util.*;
  * @version		1.0.3
  */
 public class Cdb {
+	public static final int HASHTABLE_LENGTH = 2048;
 	/** The RandomAccessFile for the CDB file. */
 	private RandomAccessFile file_ = null;
 
@@ -70,18 +71,29 @@ public class Cdb {
 	/** The position of the current key in the slot. */
 	private int kpos_ = 0;
 
+    /**
+     * Creates an instance of the Cdb class and loads the given CDB
+     * file.
+     *
+     * @param filepath The path to the CDB file to open.
+     * @exception java.io.IOException if the CDB file could not be
+     *  opened.
+     */
+    public Cdb(String filepath) throws IOException {
+        this(new File(filepath));
+    }
 
 	/**
 	 * Creates an instance of the Cdb class and loads the given CDB
 	 * file.
 	 *
-	 * @param filepath The path to the CDB file to open.
+	 * @param cdbFile The CDB file to open.
 	 * @exception java.io.IOException if the CDB file could not be
 	 *  opened.
 	 */
-	public Cdb(String filepath) throws IOException {
+	public Cdb(File cdbFile) throws IOException {
 		/* Open the CDB file. */
-		file_ = new RandomAccessFile(filepath, "r");
+		file_ = new RandomAccessFile(cdbFile, "r");
 
 		/* Read and parse the slot table.  We do not throw an exception
 		 * if this fails; the file might empty, which is not an error. */
@@ -90,7 +102,7 @@ public class Cdb {
 			byte[] table = new byte[2048];
 			file_.readFully(table);
 
-			/* Create and parse the table. */
+			/* Create and parse the slot table. */
 			slotTable_ = new int[256 * 2];
 
 			int offset = 0;
@@ -117,12 +129,14 @@ public class Cdb {
 	/**
 	 * Closes the CDB database.
 	 */
-	public final void close() {
+	public final void close() throws IOException {
 		/* Close the CDB file. */
 		try {
 			file_.close();
+		}
+		finally {
 			file_ = null;
-		} catch (IOException ignored) {}
+		}
 	}
 
 
@@ -159,7 +173,7 @@ public class Cdb {
 	 *
 	 * @param key The key to search for.
 	 */
-	public final void findstart(byte[] key) {
+	public synchronized final void findstart(byte[] key) {
 		loop_ = 0;
 	}
 
@@ -296,7 +310,7 @@ public class Cdb {
 	 * @exception java.io.IOException if an error occurs reading the
 	 *  constant database.
 	 */
-	public static Enumeration<CdbElement> elements(final String filepath)
+	public static CdbElementEnumeration elements(final String filepath)
 		throws IOException
 	{
 		/* Open the data file. */
@@ -312,71 +326,13 @@ public class Cdb {
 				| ((in.read() & 0xff) << 24);
 
 		/* Skip the rest of the hashtable. */
-		in.skip(2048 - 4);
+		long skipped = in.skip(HASHTABLE_LENGTH - 4);
+		if (skipped != HASHTABLE_LENGTH - 4) {
+			throw new IOException("Unable to skip hashtable in file. File too short!");
+		}
 
 		/* Return the Enumeration. */
-		return new Enumeration<CdbElement>() {
-			/* Current data pointer. */
-			int pos = 2048;
-
-			/* Finalizer. */
-			protected void finalize() {
-				try { in.close(); } catch (Exception ignored) {}
-			}
-
-
-			/* Returns <code>true</code> if there are more elements in
-			 * the constant database (pos < eod); <code>false</code>
-			 * otherwise. */
-			public boolean hasMoreElements() {
-				return pos < eod;
-			}
-
-			/* Returns the next data element in the CDB file. */
-			public synchronized CdbElement nextElement() {
-				try {
-					/* Read the key and value lengths. */
-					int klen = readLeInt(); pos += 4;
-					int dlen = readLeInt(); pos += 4;
-
-					/* Read the key. */
-					byte[] key = new byte[klen];
-					for (int off = 0; off < klen; /* below */) {
-						int count = in.read(key, off, klen - off);
-						if (count == -1)
-							throw new IllegalArgumentException(
-								"invalid cdb format");
-						off += count;
-					}
-					pos += klen;
-
-					/* Read the data. */
-					byte[] data = new byte[dlen];
-					for (int off = 0; off < dlen; /* below */) {
-						int count = in.read(data, off, dlen - off);
-						if (count == -1)
-							throw new IllegalArgumentException(
-								"invalid cdb format");
-						off += count;
-					}
-					pos += dlen;
-
-					/* Return a CdbElement with the key and data. */
-					return new CdbElement(key, data);
-				} catch (IOException ioException) {
-					throw new IllegalArgumentException(
-						"invalid cdb format");
-				}
-			}
-
-
-			/* Reads a little-endian integer from <code>in</code>. */
-			private int readLeInt() throws IOException {
-				return (in.read() & 0xff)
-					| ((in.read() & 0xff) <<  8)
-					| ((in.read() & 0xff) << 16)
-					| ((in.read() & 0xff) << 24);
-			}
-		};
+		return new CdbElementEnumeration(in, eod);
 	}
+
 }

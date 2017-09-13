@@ -3,9 +3,9 @@ package cdb;
 import java.io.PrintStream;
 
 /**
- * Just redirects to the other main methods based on a name parameter
+ * Just redirects to the other CDB methods based on a name parameter
  */
-public class main {
+public class CDB {
     /** An enum over the other apps */
     private enum App {
         dump, get, make;
@@ -37,16 +37,16 @@ public class main {
             remainingArgs[i] = args[i + 1];
         }
 
-        // call the app main
+        // call the app CDB
         switch(a) {
             case get:
-                get.main(remainingArgs);
+                Get.main(remainingArgs);
                 break;
             case dump:
-                dump.main(remainingArgs);
+                Dump.main(remainingArgs);
                 break;
             case make:
-                dump.main(remainingArgs);
+                Dump.main(remainingArgs);
                 break;
         }
 

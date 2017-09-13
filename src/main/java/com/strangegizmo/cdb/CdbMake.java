@@ -302,7 +302,7 @@ public final class CdbMake {
 		make(in, cdbFilepath, tempFilepath, ignoreCdb);
 
 		/* Close the data file. */
-		try { in.close(); } catch (Exception ignored) {}
+		in.close();
 	}
 
 	/**

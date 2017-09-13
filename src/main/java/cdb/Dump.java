@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * Copyright (c) 2000-2006, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,45 +32,64 @@
 
 package cdb;
 
+/* Java imports. */
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.*;
+
 /* strangeGizmo imports. */
 import com.strangegizmo.cdb.*;
 
 /**
- * The cdb.get program is a command-line tool which is used to retrieve
- * data from a constant database.
+ * The cdb.Dump program is a command-line tool which is used to Dump the
+ * values stored in a constant database.
  *
  * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
- * @version		1.0
+ * @version		1.0.4
  */
-public class get {
-	public static void main(String[] args) throws Exception {
-		/* Display a usage message if we didn't get the correct number
+public class Dump {
+	public static void main(String[] args) {
+		/* Display a usage message if we didn't Get the correct number
 		 * of arguments. */
-		if ((args.length < 2) || (args.length > 3)) {
-			System.out.println("cdb.get: usage: cdb.get file key [skip]");
+		if (args.length != 1) {
+			System.out.println("cdb.Dump: usage: cdb.Dump file");
 			return;
 		}
 
-		/* Parse the arguments. */
-		String file = args[0];
-		byte[] key = args[1].getBytes();
-		int skip = 0;
-		if (args.length == 3)
-			skip = Integer.parseInt(args[2]);
-
-		/* Create the CDB object. */
-		Cdb cdb = new Cdb(file);
-		cdb.findstart(key);
-
-		/* Fetch the data. */
-		byte[] data;
-		do {
-			data = cdb.findnext(key);
-			if (data == null ) return;
-		} while (skip-- != 0);
-
-		/* Display the data. */
-		System.out.write(data);
-		System.out.flush();
+		/* Decode our arguments. */
+		String cdbFile = args[0];
+		
+		/* Dump the CDB file. */
+		try {
+			CdbElementEnumeration e = Cdb.elements(cdbFile);
+			dump(e, System.out);
+			e.close();
+		} catch (IOException ioException) {
+			System.out.println("Couldn't Dump CDB file: "
+				+ ioException);
+		}
 	}
+
+	public static void dump(Enumeration<CdbElement> e, PrintStream out) throws IOException {
+        while (e.hasMoreElements())  {
+				/* Get the element and its component parts. */
+            CdbElement element = e.nextElement();
+            byte[] key = element.getKey();
+            byte[] data = element.getData();
+
+				/* Write the line directly to stdout to avoid any
+				 * charset conversion that System.print() might want to
+				 * perform. */
+			String header = "+" + key.length + "," + data.length + ":";
+			byte[] headerBytes = header.getBytes(Charset.forName("US-ASCII"));
+            out.write(headerBytes);
+            out.write(key);
+            out.write('-');
+            out.write('>');
+            out.write(data);
+            out.write('\n');
+        }
+        out.write('\n');
+        out.flush();
+    }
 }

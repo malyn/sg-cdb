@@ -1,20 +1,20 @@
 package com.strangegizmo.cdb;
 
-import cdb.dump;
+import cdb.Dump;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * tests if dump produces our example make file
+ * tests if Dump produces our example Make file
  */
 public class DumpTest {
     @Rule
@@ -37,11 +37,11 @@ public class DumpTest {
     public void testDump() throws IOException {
         Enumeration elements = Cdb.elements(cdb.getAbsolutePath());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(outputStream);
-        dump.dump(elements, out);
+        PrintStream out = new PrintStream(outputStream, true, "US-ASCII");
+        Dump.dump(elements, out);
         out.close();
 
-        String result = new String(outputStream.toByteArray());
+        String result = new String(outputStream.toByteArray(), Charset.forName("US-ASCII"));
         assertEquals(CdbMakeTest.TEST_MAKE, result);
     }
 }

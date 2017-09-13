@@ -1,6 +1,6 @@
 sudo: false
 language: java
-script: gradlew sonarqube \
+script: ./gradlew sonarqube \
                   -Dsonar.organization=duckasteroid-github \
                   -Dsonar.host.url=https://sonarcloud.io \
                   -Dsonar.login=%SONARQUBE_KEY%

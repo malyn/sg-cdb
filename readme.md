@@ -30,6 +30,7 @@ Change List
 -   Added a main method/class that simply redirects between the 
     `dump`/`make`/`get` tools.
 -   Added metadata to make JAR executable
+-   Added Travis-CI build script
 
 1.0.4
 -----

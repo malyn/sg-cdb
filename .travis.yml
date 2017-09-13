@@ -1,0 +1,21 @@
+sudo: false
+language: java
+jdk:
+  - oraclejdk7
+script: gradle install
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+deploy:
+  provider: releases
+  api_key:
+    secure: QKq/CE+Tf2LwFC7kqlMVh9lyJ48IUYpPeQIyq6bIs/GpFzIfOnvcXxuKetVH/Eg0ohSAnasb8+eC0jqkVQH2fHiEE/vb4QsoLsxfPURvYrmq1tXeM9FYqi7xPFFCEHOkAy8pKkFJydGduJQWIUH0ibVm8/nYyLr6OZPhPdLnWv4=
+  file: build/lib/rat-xml-1.0.0.jar
+  skip_cleanup: true
+  on:
+    repo: duckAsteroid/sg-cdb
+    tags: true

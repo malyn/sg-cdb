@@ -17,6 +17,7 @@ dependencies {
 }
 
 jar {
+    
     manifest {
         attributes(
                 'Main-Class': 'cdb.main'

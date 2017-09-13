@@ -31,3 +31,6 @@ jar {
 findbugs {
     excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
 }
+
+sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
+sourceSets.test.output.classesDir = new File(buildDir, "classes/test")

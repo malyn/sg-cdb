@@ -48,30 +48,30 @@ public final class CdbMake {
     /**
      * The RandomAccessFile for the CdbRunner file.
      */
-    private RandomAccessFile file_ = null;
+    private RandomAccessFile file = null;
 
 
     /**
      * The list of hash pointers in the file, in their order in the
      * constant database.
      */
-    private Vector hashPointers_ = null;
+    private List<CdbHashPointer> hashPointers = null;
 
     /**
      * The number of entries in each hash table.
      */
-    private int[] tableCount_ = null;
+    private int[] tableCount = null;
 
     /**
      * The first entry in each table.
      */
-    private int[] tableStart_ = null;
+    private int[] tableStart = null;
 
 
     /**
      * The position of the current key in the constant database.
      */
-    private int pos_ = -1;
+    private int pos = -1;
 
 
     /**
@@ -90,21 +90,20 @@ public final class CdbMake {
      *                             constant database file.
      */
     public void start(File filepath) throws IOException {
-        /* Initialize the class. */
-        hashPointers_ = new Vector();
-        tableCount_ = new int[256];
-        tableStart_ = new int[256];
+        hashPointers = new LinkedList<>();
+        tableCount = new int[256];
+        tableStart = new int[256];
 
 		/* Clear the table counts. */
         for (int i = 0; i < 256; i++)
-            tableCount_[i] = 0;
+            tableCount[i] = 0;
 
 		/* Open the temporary CdbRunner file. */
-        file_ = new RandomAccessFile(filepath, "rw");
+        file = new RandomAccessFile(filepath, "rw");
 
 		/* Seek to the end of the header. */
-        pos_ = 2048;
-        file_.seek(pos_);
+        pos = 2048;
+        file.seek(pos);
     }
 
     /**
@@ -116,25 +115,25 @@ public final class CdbMake {
      *                             to the database.
      */
     public void add(byte[] key, byte[] data) throws IOException {
-		/* Write out the key length. */
+		// Write out the key length.
         writeLeInt(key.length);
 
 		/* Write out the data length. */
         writeLeInt(data.length);
 
 		/* Write out the key. */
-        file_.write(key);
+        file.write(key);
 
 		/* Write out the data. */
-        file_.write(data);
+        file.write(data);
 
 
 		/* Add the hash pointer to our list. */
         int hash = Cdb.hash(key);
-        hashPointers_.addElement(new CdbHashPointer(hash, pos_));
+        hashPointers.add(new CdbHashPointer(hash, pos));
 
 		/* Add this item to the count. */
-        tableCount_[hash & 0xff]++;
+        tableCount[hash & 0xff]++;
 
 
 		/* Update the file position pointer. */
@@ -153,16 +152,15 @@ public final class CdbMake {
 		/* Find the start of each hash table. */
         int curEntry = 0;
         for (int i = 0; i < 256; i++) {
-            curEntry += tableCount_[i];
-            tableStart_[i] = curEntry;
+            curEntry += tableCount[i];
+            tableStart[i] = curEntry;
         }
 
 		/* Create a new hash pointer list in order by hash table. */
         CdbHashPointer[] slotPointers
-                = new CdbHashPointer[hashPointers_.size()];
-        for (Enumeration e = hashPointers_.elements(); e.hasMoreElements(); ) {
-            CdbHashPointer hp = (CdbHashPointer) e.nextElement();
-            slotPointers[--tableStart_[hp.hash & 0xff]] = hp;
+                = new CdbHashPointer[hashPointers.size()];
+        for (CdbHashPointer hp : hashPointers ) {
+            slotPointers[--tableStart[hp.hash & 0xff]] = hp;
         }
 
 		/* Write out each of the hash tables, building the slot table in
@@ -170,22 +168,22 @@ public final class CdbMake {
         byte[] slotTable = new byte[2048];
         for (int i = 0; i < 256; i++) {
 			/* Get the length of the hashtable. */
-            int len = tableCount_[i] * 2;
+            int len = tableCount[i] * 2;
 
 			/* Store the position of this table in the slot table. */
-            slotTable[(i * 8) + 0] = (byte) (pos_ & 0xff);
-            slotTable[(i * 8) + 1] = (byte) ((pos_ >>> 8) & 0xff);
-            slotTable[(i * 8) + 2] = (byte) ((pos_ >>> 16) & 0xff);
-            slotTable[(i * 8) + 3] = (byte) ((pos_ >>> 24) & 0xff);
+            slotTable[(i * 8) + 0] = (byte) (pos & 0xff);
+            slotTable[(i * 8) + 1] = (byte) ((pos >>> 8) & 0xff);
+            slotTable[(i * 8) + 2] = (byte) ((pos >>> 16) & 0xff);
+            slotTable[(i * 8) + 3] = (byte) ((pos >>> 24) & 0xff);
             slotTable[(i * 8) + 4 + 0] = (byte) (len & 0xff);
             slotTable[(i * 8) + 4 + 1] = (byte) ((len >>> 8) & 0xff);
             slotTable[(i * 8) + 4 + 2] = (byte) ((len >>> 16) & 0xff);
             slotTable[(i * 8) + 4 + 3] = (byte) ((len >>> 24) & 0xff);
 
 			/* Build the hash table. */
-            int curSlotPointer = tableStart_[i];
+            int curSlotPointer = tableStart[i];
             CdbHashPointer hashTable[] = new CdbHashPointer[len];
-            for (int u = 0; u < tableCount_[i]; u++) {
+            for (int u = 0; u < tableCount[i]; u++) {
 				/* Get the hash pointer. */
                 CdbHashPointer hp = slotPointers[curSlotPointer++];
 
@@ -215,11 +213,11 @@ public final class CdbMake {
 
 		/* Seek back to the beginning of the file and write out the
 		 * slot table. */
-        file_.seek(0);
-        file_.write(slotTable);
+        file.seek(0);
+        file.write(slotTable);
 
 		/* Close the file. */
-        file_.close();
+        file.close();
     }
 
 
@@ -230,10 +228,10 @@ public final class CdbMake {
      * @param v The integer to write to the file.
      */
     private void writeLeInt(int v) throws IOException {
-        file_.writeByte((byte) (v & 0xff));
-        file_.writeByte((byte) ((v >>> 8) & 0xff));
-        file_.writeByte((byte) ((v >>> 16) & 0xff));
-        file_.writeByte((byte) ((v >>> 24) & 0xff));
+        file.writeByte((byte) (v & 0xff));
+        file.writeByte((byte) ((v >>> 8) & 0xff));
+        file.writeByte((byte) ((v >>> 16) & 0xff));
+        file.writeByte((byte) ((v >>> 24) & 0xff));
     }
 
     /**
@@ -247,10 +245,10 @@ public final class CdbMake {
      *                             4 GB.
      */
     private void posplus(int count) throws IOException {
-        int newpos = pos_ + count;
+        int newpos = pos + count;
         if (newpos < count)
             throw new IOException("CdbRunner file is too big.");
-        pos_ = newpos;
+        pos = newpos;
     }
 
 

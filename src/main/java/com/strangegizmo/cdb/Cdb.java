@@ -35,7 +35,6 @@ package com.strangegizmo.cdb;
 /* Java imports. */
 
 import java.io.*;
-import java.util.*;
 
 /**
  * CdbRunner implements a Java interface to D.&nbsp;J.&nbsp;Bernstein's CdbRunner
@@ -49,42 +48,42 @@ public class Cdb {
     /**
      * The RandomAccessFile for the CdbRunner file.
      */
-    private RandomAccessFile file_ = null;
+    private RandomAccessFile file = null;
 
     /**
      * The slot pointers, cached here for efficiency as we do not have
      * mmap() to do it for us.  These entries are paired as (pos, len)
      * tuples.
      */
-    private int[] slotTable_ = null;
+    private int[] slotTable = null;
 
 
     /**
      * The number of hash slots searched under this key.
      */
-    private int loop_ = 0;
+    private int loop = 0;
 
     /**
      * The hash value for the current key.
      */
-    private int khash_ = 0;
+    private int khash = 0;
 
 
     /**
      * The number of hash slots in the hash table for the current key.
      */
-    private int hslots_ = 0;
+    private int hslots = 0;
 
     /**
      * The position of the hash table for the current key
      */
-    private int hpos_ = 0;
+    private int hpos = 0;
 
 
     /**
      * The position of the current key in the slot.
      */
-    private int kpos_ = 0;
+    private int kpos = 0;
 
     /**
      * Creates an instance of the CdbRunner class and loads the given CdbRunner
@@ -108,17 +107,17 @@ public class Cdb {
      */
     public Cdb(File cdbFile) throws IOException {
         /* Open the CdbRunner file. */
-        file_ = new RandomAccessFile(cdbFile, "r");
+        file = new RandomAccessFile(cdbFile, "r");
 
 		/* Read and parse the slot table.  We do not throw an exception
 		 * if this fails; the file might empty, which is not an error. */
         try {
 			/* Read the table. */
             byte[] table = new byte[2048];
-            file_.readFully(table);
+            file.readFully(table);
 
 			/* Create and parse the slot table. */
-            slotTable_ = new int[256 * 2];
+            slotTable = new int[256 * 2];
 
             int offset = 0;
             for (int i = 0; i < 256; i++) {
@@ -132,11 +131,11 @@ public class Cdb {
                         | ((table[offset++] & 0xff) << 16)
                         | ((table[offset++] & 0xff) << 24);
 
-                slotTable_[i << 1] = pos;
-                slotTable_[(i << 1) + 1] = len;
+                slotTable[i << 1] = pos;
+                slotTable[(i << 1) + 1] = len;
             }
         } catch (IOException ignored) {
-            slotTable_ = null;
+            slotTable = null;
         }
     }
 
@@ -147,9 +146,9 @@ public class Cdb {
     public final void close() throws IOException {
 		/* Close the CdbRunner file. */
         try {
-            file_.close();
+            file.close();
         } finally {
-            file_ = null;
+            file = null;
         }
     }
 
@@ -188,7 +187,7 @@ public class Cdb {
      * @param key The key to search for.
      */
     public synchronized final void findstart(byte[] key) {
-        loop_ = 0;
+        loop = 0;
     }
 
     /**
@@ -212,83 +211,83 @@ public class Cdb {
      */
     public final synchronized byte[] findnext(byte[] key) {
 		/* There are no keys if we could not read the slot table. */
-        if (slotTable_ == null)
+        if (slotTable == null)
             return null;
 
 		/* Locate the hash entry if we have not yet done so. */
-        if (loop_ == 0) {
+        if (loop == 0) {
 			/* Get the hash value for the key. */
             int u = hash(key);
 
 			/* Unpack the information for this record. */
             int slot = u & 255;
-            hslots_ = slotTable_[(slot << 1) + 1];
-            if (hslots_ == 0)
+            hslots = slotTable[(slot << 1) + 1];
+            if (hslots == 0)
                 return null;
-            hpos_ = slotTable_[slot << 1];
+            hpos = slotTable[slot << 1];
 
 			/* Store the hash value. */
-            khash_ = u;
+            khash = u;
 
 			/* Locate the slot containing this key. */
             u >>>= 8;
-            u %= hslots_;
+            u %= hslots;
             u <<= 3;
-            kpos_ = hpos_ + u;
+            kpos = hpos + u;
         }
 
 		/* Search all of the hash slots for this key. */
         try {
-            while (loop_ < hslots_) {
+            while (loop < hslots) {
 				/* Read the entry for this key from the hash slot. */
-                file_.seek(kpos_);
+                file.seek(kpos);
 
-                int h = file_.readUnsignedByte()
-                        | (file_.readUnsignedByte() << 8)
-                        | (file_.readUnsignedByte() << 16)
-                        | (file_.readUnsignedByte() << 24);
+                int h = file.readUnsignedByte()
+                        | (file.readUnsignedByte() << 8)
+                        | (file.readUnsignedByte() << 16)
+                        | (file.readUnsignedByte() << 24);
 
-                int pos = file_.readUnsignedByte()
-                        | (file_.readUnsignedByte() << 8)
-                        | (file_.readUnsignedByte() << 16)
-                        | (file_.readUnsignedByte() << 24);
+                int pos = file.readUnsignedByte()
+                        | (file.readUnsignedByte() << 8)
+                        | (file.readUnsignedByte() << 16)
+                        | (file.readUnsignedByte() << 24);
                 if (pos == 0)
                     return null;
 
 				/* Advance the loop count and key position.  Wrap the
 				 * key position around to the beginning of the hash slot
 				 * if we are at the end of the table. */
-                loop_ += 1;
+                loop += 1;
 
-                kpos_ += 8;
-                if (kpos_ == (hpos_ + (hslots_ << 3)))
-                    kpos_ = hpos_;
+                kpos += 8;
+                if (kpos == (hpos + (hslots << 3)))
+                    kpos = hpos;
 
 				/* Ignore this entry if the hash values do not match. */
-                if (h != khash_)
+                if (h != khash)
                     continue;
 
 				/* Get the length of the key and data in this hash slot
 				 * entry. */
-                file_.seek(pos);
+                file.seek(pos);
 
-                int klen = file_.readUnsignedByte()
-                        | (file_.readUnsignedByte() << 8)
-                        | (file_.readUnsignedByte() << 16)
-                        | (file_.readUnsignedByte() << 24);
+                int klen = file.readUnsignedByte()
+                        | (file.readUnsignedByte() << 8)
+                        | (file.readUnsignedByte() << 16)
+                        | (file.readUnsignedByte() << 24);
                 if (klen != key.length)
                     continue;
 
-                int dlen = file_.readUnsignedByte()
-                        | (file_.readUnsignedByte() << 8)
-                        | (file_.readUnsignedByte() << 16)
-                        | (file_.readUnsignedByte() << 24);
+                int dlen = file.readUnsignedByte()
+                        | (file.readUnsignedByte() << 8)
+                        | (file.readUnsignedByte() << 16)
+                        | (file.readUnsignedByte() << 24);
 
 				/* Read the key stored in this entry and compare it to
 				 * the key we were given. */
                 boolean match = true;
                 byte[] k = new byte[klen];
-                file_.readFully(k);
+                file.readFully(k);
                 for (int i = 0; i < k.length; i++) {
                     if (k[i] != key[i]) {
                         match = false;
@@ -302,7 +301,7 @@ public class Cdb {
 
 				/* The keys match, return the data. */
                 byte[] d = new byte[dlen];
-                file_.readFully(d);
+                file.readFully(d);
                 return d;
             }
         } catch (IOException ignored) {

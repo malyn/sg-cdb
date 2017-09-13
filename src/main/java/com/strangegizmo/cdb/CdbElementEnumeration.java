@@ -7,8 +7,8 @@ import java.util.Enumeration;
 public class CdbElementEnumeration implements Enumeration<CdbElement> {
     private final InputStream in;
     private final int eod;
-    /* Current data pointer. */
-    int pos;
+    /** Current data pointer. */
+    private int pos;
 
     public CdbElementEnumeration(InputStream in, int eod) {
         this.in = in;

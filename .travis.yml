@@ -1,12 +1,16 @@
 sudo: false
 language: java
+script: gradlew sonarqube \
+                  -Dsonar.organization=duckasteroid-github \
+                  -Dsonar.host.url=https://sonarcloud.io \
+                  -Dsonar.login=%SONARQUBE_KEY%
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 deploy:
   provider: releases
   api_key:
@@ -16,3 +20,6 @@ deploy:
   on:
     repo: duckAsteroid/sg-cdb
     tags: true
+env:
+  global:
+    secure: FZYs+xjMo9o0nX96NPE+9DbvrP0nVCCtyG9fqwYx3FO99Oe6PymJOfJxUlIhA+sJGerFFhJ4pP38xV1SR0i0h1GY+gsZKtfnmPjB8CtIDjMeTN0iV38Fn+7Ydghkx4ylTI6yfmticdvuCQSyQMad5BoD4Wp2Kan0T2H1uGR8zk0VonnsuQuxlYkO8NekDV4CQi00ErB2tja02fJZBqU0ErghlVCh8qDnkTBNbWHbvN/BKrarZECSTsWqUzoA6nGKA8WSn1j3fpV0ZnKc8jEexYD7SCxP642DZsHbl1TGa2KnSj5XcUb/RDVuFwtTXsj7PPbywjlFOQhOdEV4dh9ELONE4QS54Yk8OHazhGOUyiCL0aRuZDcVoJ1DD1b/FaNty+ZgVaY02B2ObpHCEhq5bnt94VPHzsZjxyWAWamSxX3XoDjahsCkjOtgqoZMAamXF6rhp01R4EJd/MWHJD2xhBkdPKD6QDSZ4/DEn4Rv1bcZHm3x+XpR6eVSD18oFiycRgKbPyXlvBOHp3Q7PE92QVR/Yaowm7YGC7duJjFTH/ILr26XvwGD0wptTRn7nVaU68YFWO2wvTHcinTo53a0ps288vKKoZHdbaEW2wcbGfnhWGYicJzTSkd7MRKsVDWQDHMft6pCi1yIVobxK8wYjWDU7jmjCYxE7lizTXXw7V4=

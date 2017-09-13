@@ -16,28 +16,32 @@ public class CdbElementEnumeration implements Enumeration<CdbElement> {
         pos = 2048;
     }
 
-    /* Finalizer. */
+
     public void close() throws IOException {
         in.close();
     }
 
-    /* Returns <code>true</code> if there are more elements in
-    * the constant database (pos < eod); <code>false</code>
-    * otherwise. */
+    /**
+     * Returns <code>true</code> if there are more elements in
+     * the constant database (pos < eod); <code>false</code>
+     * otherwise.
+     */
     public synchronized boolean hasMoreElements() {
         return pos < eod;
     }
 
-    /* Returns the next data element in the CDB file. */
+    /**
+     * Returns the next data element in the CdbRunner file.
+     */
     public synchronized CdbElement nextElement() {
         try {
-/* Read the key and value lengths. */
+// Read the key and value lengths.
             int klen = readLeInt();
             pos += 4;
             int dlen = readLeInt();
             pos += 4;
 
-/* Read the key. */
+// Read the key.
             byte[] key = new byte[klen];
             for (int off = 0; off < klen; /* below */) {
                 int count = in.read(key, off, klen - off);
@@ -48,7 +52,7 @@ public class CdbElementEnumeration implements Enumeration<CdbElement> {
             }
             pos += klen;
 
-/* Read the data. */
+// Read the data.
             byte[] data = new byte[dlen];
             for (int off = 0; off < dlen; /* below */) {
                 int count = in.read(data, off, dlen - off);
@@ -59,7 +63,7 @@ public class CdbElementEnumeration implements Enumeration<CdbElement> {
             }
             pos += dlen;
 
-/* Return a CdbElement with the key and data. */
+// Return a CdbElement with the key and data.
             return new CdbElement(key, data);
         } catch (IOException ioException) {
             throw new IllegalArgumentException(
@@ -68,7 +72,9 @@ public class CdbElementEnumeration implements Enumeration<CdbElement> {
     }
 
 
-    /* Reads a little-endian integer from <code>in</code>. */
+    /**
+     * Reads a little-endian integer from <code>in</code>.
+     */
     private int readLeInt() throws IOException {
         return (in.read() & 0xff)
                 | ((in.read() & 0xff) << 8)

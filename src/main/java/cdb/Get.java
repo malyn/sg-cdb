@@ -46,32 +46,32 @@ import java.nio.charset.Charset;
  */
 public class Get {
 	public static void main(String[] args) throws Exception {
-		/* Display a usage message if we didn't Get the correct number
-		 * of arguments. */
+		// Display a usage message if we didn't get the correct number
+		// of arguments.
 		if ((args.length < 2) || (args.length > 3)) {
 			System.out.println("cdb.Get: usage: cdb.Get file key [skip]");
 			return;
 		}
 
-		/* Parse the arguments. */
+		// Parse the arguments.
 		String file = args[0];
 		byte[] key = args[1].getBytes(Charset.forName("US-ASCII"));
 		int skip = 0;
 		if (args.length == 3)
 			skip = Integer.parseInt(args[2]);
 
-		/* Create the CDB object. */
+		// Create the Cdb object.
 		Cdb cdb = new Cdb(file);
 		cdb.findstart(key);
 
-		/* Fetch the data. */
+		// Fetch the data.
 		byte[] data;
 		do {
 			data = cdb.findnext(key);
 			if (data == null ) return;
 		} while (skip-- != 0);
 
-		/* Display the data. */
+		// Display the data.
 		System.out.write(data);
 		System.out.flush();
 	}

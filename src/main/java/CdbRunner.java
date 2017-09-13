@@ -3,15 +3,17 @@ package cdb;
 import java.io.PrintStream;
 
 /**
- * Just redirects to the other CDB methods based on a name parameter
+ * Just redirects to the other CdbRunner methods based on a name parameter.
  */
-public class CDB {
-    /** An enum over the other apps */
+public class CdbRunner {
+    /**
+     * An enum over the other apps.
+     */
     private enum App {
         dump, get, make;
 
         public static final App parse(String s) {
-            for(App a : values()) {
+            for (App a : values()) {
                 if (a.name().equalsIgnoreCase(s)) {
                     return a;
                 }
@@ -27,7 +29,7 @@ public class CDB {
         }
         App a = App.parse(args[0]);
         if (a == null) {
-            System.err.println("Unrecognized app name: "+args[0]);
+            System.err.println("Unrecognized app name: " + args[0]);
             usage(System.err);
             System.exit(-2);
         }
@@ -37,8 +39,8 @@ public class CDB {
             remainingArgs[i] = args[i + 1];
         }
 
-        // call the app CDB
-        switch(a) {
+        // call the app CdbRunner
+        switch (a) {
             case get:
                 Get.main(remainingArgs);
                 break;
@@ -53,9 +55,9 @@ public class CDB {
     }
 
     private static void usage(final PrintStream out) {
-        out.println("CDB requires an application name, one of: ");
-        for(App a : App.values()) {
-            out.println("\t"+a.name());
+        out.println("CdbRunner requires an application name, one of: ");
+        for (App a : App.values()) {
+            out.println("\t" + a.name());
         }
     }
 }

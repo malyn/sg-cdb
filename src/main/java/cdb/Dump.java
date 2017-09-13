@@ -59,13 +59,13 @@ public class Dump {
 		/* Decode our arguments. */
 		String cdbFile = args[0];
 		
-		/* Dump the CDB file. */
+		/* Dump the CdbRunner file. */
 		try {
 			CdbElementEnumeration e = Cdb.elements(cdbFile);
 			dump(e, System.out);
 			e.close();
 		} catch (IOException ioException) {
-			System.out.println("Couldn't Dump CDB file: "
+			System.out.println("Couldn't Dump CdbRunner file: "
 				+ ioException);
 		}
 	}

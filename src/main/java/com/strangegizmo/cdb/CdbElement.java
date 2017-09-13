@@ -35,45 +35,49 @@ package com.strangegizmo.cdb;
 /**
  * CdbElement represents a single element in a constant database.
  *
- * @author		Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
- * @version		1.0.2
+ * @author Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * @version 1.0.2
  */
 public final class CdbElement {
-	/** The key value for this element. */
-	private final byte[] key_;
+    /**
+     * The key value for this element.
+     */
+    private final byte[] key_;
 
-	/** The data value for this element. */
-	private final byte[] data_;
-
-
-	/**
-	 * Creates an instance of the CdbElement class and initializes it
-	 * with the given key and data values.
-	 *
-	 * @param key The key value for this element.
-	 * @param data The data value for this element.
-	 */
-	public CdbElement(byte[] key, byte[] data) {
-		this.key_ = key;
-		this.data_ = data;
-	}
+    /**
+     * The data value for this element.
+     */
+    private final byte[] data_;
 
 
-	/**
-	 * Returns this element's key.
-	 *
-	 * @return This element's key.
-	 */
-	public byte[] getKey() {
-		return key_;
-	}
+    /**
+     * Creates an instance of the CdbElement class and initializes it
+     * with the given key and data values.
+     *
+     * @param key  The key value for this element.
+     * @param data The data value for this element.
+     */
+    public CdbElement(byte[] key, byte[] data) {
+        this.key_ = key;
+        this.data_ = data;
+    }
 
-	/**
-	 * Returns this element's data.
-	 *
-	 * @return This element's data.
-	 */
-	public byte[] getData() {
-		return data_;
-	}
+
+    /**
+     * Returns this element's key.
+     *
+     * @return This element's key.
+     */
+    public byte[] getKey() {
+        return key_;
+    }
+
+    /**
+     * Returns this element's data.
+     *
+     * @return This element's data.
+     */
+    public byte[] getData() {
+        return data_;
+    }
 }

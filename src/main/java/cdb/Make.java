@@ -63,16 +63,16 @@ public class Make {
 			try {
 				ignoreCdb = new Cdb(args[2]);
 			} catch (IOException ioException) {
-				System.out.println("Couldn't load `ignore' CDB file: "
+				System.out.println("Couldn't load `ignore' CdbRunner file: "
 					+ ioException);
 			}
 		}
 
-		/* Create the CDB file. */
+		/* Create the CdbRunner file. */
 		try {
 			CdbMake.make(System.in, cdbFile, tempFile, ignoreCdb);
 		} catch (IOException ioException) {
-			System.out.println("Couldn't create CDB file: "
+			System.out.println("Couldn't create CdbRunner file: "
 				+ ioException);
 		}
 	}

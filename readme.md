@@ -20,6 +20,10 @@ Mr. Bernstein.  He is not the maintainer of this implementation.
 See the [sg-cdb product page](http://www.strangeGizmo.com/products/sg-cdb/) 
 on the strangeGizmo.com site for more information.
 
+Continuous integration builds are performed by [Travis-CI](https://travis-ci.org/duckAsteroid/sg-cdb) [![Build Status](https://travis-ci.org/duckAsteroid/sg-cdb.svg?branch=master)](https://travis-ci.org/duckAsteroid/sg-cdb)
+
+Software metrics are tracked via [SonarQube](https://sonarcloud.io/dashboard?id=sg-cdb)
+
 
 
 Change List

@@ -33,10 +33,7 @@ findbugs {
     excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
 }
 
-// workaround for SonarQube plugin warning
-// see https://stackoverflow.com/questions/44578302/splitting-all-ouput-directories-gradle
-sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
-sourceSets.test.output.classesDir = new File(buildDir, "classes/test")
+
 sonarqube {
     properties {
         property 'sonar.organization', 'duckasteroid-github'

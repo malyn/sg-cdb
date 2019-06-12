@@ -37,7 +37,7 @@ package com.strangegizmo.cdb;
 import java.io.*;
 
 /**
- * CdbRunner implements a Java interface to D.&nbsp;J.&nbsp;Bernstein's CdbRunner
+ * CDB implements a Java interface to D.&nbsp;J.&nbsp;Bernstein's CDB
  * database.
  *
  * @author Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
@@ -46,7 +46,7 @@ import java.io.*;
 public class Cdb {
     public static final int HASHTABLE_LENGTH = 2048;
     /**
-     * The RandomAccessFile for the CdbRunner file.
+     * The RandomAccessFile for the CDB file.
      */
     private RandomAccessFile file = null;
 
@@ -86,11 +86,11 @@ public class Cdb {
     private int kpos = 0;
 
     /**
-     * Creates an instance of the CdbRunner class and loads the given CdbRunner
+     * Creates an instance of the CDB class and loads the given CDB
      * file.
      *
-     * @param filepath The path to the CdbRunner file to open.
-     * @throws java.io.IOException if the CdbRunner file could not be
+     * @param filepath The path to the CDB file to open.
+     * @throws java.io.IOException if the CDB file could not be
      *                             opened.
      */
     public Cdb(String filepath) throws IOException {
@@ -98,15 +98,15 @@ public class Cdb {
     }
 
     /**
-     * Creates an instance of the CdbRunner class and loads the given CdbRunner
+     * Creates an instance of the CDB class and loads the given CDB
      * file.
      *
-     * @param cdbFile The CdbRunner file to open.
-     * @throws java.io.IOException if the CdbRunner file could not be
+     * @param cdbFile The CDB file to open.
+     * @throws java.io.IOException if the CDB file could not be
      *                             opened.
      */
     public Cdb(File cdbFile) throws IOException {
-        /* Open the CdbRunner file. */
+        /* Open the CDB file. */
         file = new RandomAccessFile(cdbFile, "r");
 
 		/* Read and parse the slot table.  We do not throw an exception
@@ -141,10 +141,10 @@ public class Cdb {
 
 
     /**
-     * Closes the CdbRunner database.
+     * Closes the CDB database.
      */
     public final void close() throws IOException {
-		/* Close the CdbRunner file. */
+		/* Close the CDB file. */
         try {
             file.close();
         } finally {
@@ -312,12 +312,34 @@ public class Cdb {
         return null;
     }
 
+    public static CdbElementEnumeration elements(final File file) throws IOException {
+        /* Open the data file. */
+        final InputStream in
+                = new BufferedInputStream(
+                new FileInputStream(
+                        file));
+
+        /* Read the end-of-data value. */
+        final int eod = (in.read() & 0xff)
+                | ((in.read() & 0xff) << 8)
+                | ((in.read() & 0xff) << 16)
+                | ((in.read() & 0xff) << 24);
+
+        /* Skip the rest of the hashtable. */
+        long skipped = in.skip(HASHTABLE_LENGTH - 4);
+        if (skipped != HASHTABLE_LENGTH - 4) {
+            throw new IOException("Unable to skip hashtable in file. File too short!");
+        }
+
+        /* Return the Enumeration. */
+        return new CdbElementEnumeration(in, eod);
+    }
 
     /**
      * Returns an Enumeration containing a CdbElement for each entry in
      * the constant database.
      *
-     * @param filepath The CdbRunner file to read.
+     * @param filepath The CDB file to read.
      * @return An Enumeration containing a CdbElement for each entry in
      * the constant database.
      * @throws java.io.IOException if an error occurs reading the
@@ -325,26 +347,7 @@ public class Cdb {
      */
     public static CdbElementEnumeration elements(final String filepath)
             throws IOException {
-		/* Open the data file. */
-        final InputStream in
-                = new BufferedInputStream(
-                new FileInputStream(
-                        filepath));
-
-		/* Read the end-of-data value. */
-        final int eod = (in.read() & 0xff)
-                | ((in.read() & 0xff) << 8)
-                | ((in.read() & 0xff) << 16)
-                | ((in.read() & 0xff) << 24);
-
-		/* Skip the rest of the hashtable. */
-        long skipped = in.skip(HASHTABLE_LENGTH - 4);
-        if (skipped != HASHTABLE_LENGTH - 4) {
-            throw new IOException("Unable to skip hashtable in file. File too short!");
-        }
-
-		/* Return the Enumeration. */
-        return new CdbElementEnumeration(in, eod);
+		return elements(new File(filepath));
     }
 
 }

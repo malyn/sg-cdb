@@ -1,5 +1,6 @@
 package com.strangegizmo.cdb;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,8 +16,15 @@ import static org.junit.Assert.*;
  */
 public class CdbMakeTest {
     /** Input Data */
-    public static final String TEST_MAKE = "+3,5:one->Hello" + "\n" +
-            "+3,7:two->Goodbye" +"\n\n";
+    public static final String TEST_MAKE = readFile();
+
+    private static String readFile() {
+        try {
+            return IOUtils.toString(CdbMakeTest.class.getResourceAsStream("/test.make"), "UTF-8");
+        } catch (IOException e) {
+            return e.toString();
+        }
+    }
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();

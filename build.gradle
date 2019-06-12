@@ -1,13 +1,14 @@
 plugins {
-    id "org.sonarqube" version "2.5"
+    id 'java'
+    id 'maven-publish'
+    id 'checkstyle'
+    id "com.github.spotbugs" version "2.0.0"
+    id 'jacoco'
+    id 'org.sonarqube' version '2.7.1'
 }
-apply plugin: 'java'
-apply plugin: 'findbugs'
-apply plugin: 'checkstyle'
-apply plugin: 'jacoco'
 
-sourceCompatibility = 1.7
 version = '1.0.5'
+group = 'com.asteroid.duck'
 
 // use maven central to get JARs
 repositories {
@@ -21,7 +22,6 @@ dependencies {
 }
 
 jar {
-
     manifest {
         attributes(
                 'Main-Class': 'cdb.main'
@@ -29,8 +29,27 @@ jar {
     }
 }
 
-findbugs {
-    excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
+spotbugs {
+    effort = 'max'
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        html {
+            enabled = true
+        }
+        xml {
+            enabled = false
+        }
+    }
+}
+
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 

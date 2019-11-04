@@ -7,7 +7,7 @@ plugins {
     id 'org.sonarqube' version '2.7.1'
 }
 
-version = '1.0.5'
+version = '1.0.6'
 group = 'com.asteroid.duck'
 
 // use maven central to get JARs
@@ -58,6 +58,5 @@ sonarqube {
         property 'sonar.organization', 'duckasteroid-github'
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.login', System.getenv("SONARQUBE_KEY")
-
     }
 }

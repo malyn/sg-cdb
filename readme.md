@@ -18,13 +18,13 @@ More cdb information can be found at D.J. Bernstein's home page:
 Mr. Bernstein.  He is not the maintainer of this implementation.
 
 See the [sg-cdb product page](http://www.strangeGizmo.com/products/sg-cdb/) 
-on the strangeGizmo.com site for more information.
+on the strangeGizmo.com site for more information on the basis of this fork.
 
 Continuous integration builds are performed by [Travis-CI](https://travis-ci.org/duckAsteroid/sg-cdb) [![Build Status](https://travis-ci.org/duckAsteroid/sg-cdb.svg?branch=master)](https://travis-ci.org/duckAsteroid/sg-cdb)
 
-Software metrics are tracked via [SonarQube](https://sonarcloud.io/dashboard?id=sg-cdb)
+Software metrics are tracked via [SonarQube](https://sonarcloud.io/dashboard?id=sg-cdb) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.asteroid.duck%3Asg-cdb&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.asteroid.duck%3Asg-cdb)
 
-
+Security vulnerabilities via [Snyk](https://snyk.io/) [![Known Vulnerabilities](https://snyk.io/test/github/duckAsteroid/sg-cdb/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/duckAsteroid/sg-cdb?targetFile=build.gradle)
 
 Change List
 ========================================================================

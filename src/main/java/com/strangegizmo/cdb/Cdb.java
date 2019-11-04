@@ -314,25 +314,24 @@ public class Cdb {
 
     public static CdbElementEnumeration elements(final File file) throws IOException {
         /* Open the data file. */
-        final InputStream in
-                = new BufferedInputStream(
-                new FileInputStream(
-                        file));
+        try (final InputStream in = new BufferedInputStream(
+                new FileInputStream(file))) {
 
-        /* Read the end-of-data value. */
-        final int eod = (in.read() & 0xff)
-                | ((in.read() & 0xff) << 8)
-                | ((in.read() & 0xff) << 16)
-                | ((in.read() & 0xff) << 24);
+            /* Read the end-of-data value. */
+            final int eod = (in.read() & 0xff)
+                    | ((in.read() & 0xff) << 8)
+                    | ((in.read() & 0xff) << 16)
+                    | ((in.read() & 0xff) << 24);
 
-        /* Skip the rest of the hashtable. */
-        long skipped = in.skip(HASHTABLE_LENGTH - 4);
-        if (skipped != HASHTABLE_LENGTH - 4) {
-            throw new IOException("Unable to skip hashtable in file. File too short!");
+            /* Skip the rest of the hashtable. */
+            long skipped = in.skip(HASHTABLE_LENGTH - 4);
+            if (skipped != (long)(HASHTABLE_LENGTH - 4)) {
+                throw new IOException("Unable to skip hashtable in file. File too short!");
+            }
+
+            /* Return the Enumeration. */
+            return new CdbElementEnumeration(in, eod);
         }
-
-        /* Return the Enumeration. */
-        return new CdbElementEnumeration(in, eod);
     }
 
     /**

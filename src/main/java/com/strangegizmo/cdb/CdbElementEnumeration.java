@@ -1,10 +1,11 @@
 package com.strangegizmo.cdb;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
-public class CdbElementEnumeration implements Enumeration<CdbElement> {
+public class CdbElementEnumeration implements Enumeration<CdbElement>, Closeable {
     private final InputStream in;
     private final int eod;
     /** Current data pointer. */
@@ -67,7 +68,7 @@ public class CdbElementEnumeration implements Enumeration<CdbElement> {
             return new CdbElement(key, data);
         } catch (IOException ioException) {
             throw new IllegalArgumentException(
-                    "invalid cdb format");
+                    "invalid cdb format", ioException);
         }
     }
 

@@ -11,25 +11,11 @@ import java.io.*;
 import static org.junit.Assert.*;
 
 public class CdbElementEnumerationTest {
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
 
-    private File cdb;
-
-    @Before
-    public void createCdbFile() throws IOException {
-        cdb = temp.newFile("test.cdb");
-        try(OutputStream out = new FileOutputStream(cdb)) {
-            InputStream cdbStream = DumpTest.class.getResourceAsStream("/test.cdb");
-            // copy
-            IOUtils.copy(cdbStream, out);
-            out.flush();
-        }
-    }
 
     @Test
     public void testEnumeration() throws IOException {
-        CdbElementEnumeration subject = Cdb.elements(cdb);
+        CdbElementEnumeration subject = Cdb.elements(CdbElementEnumeration.class.getResourceAsStream("/test.cdb"));
         assertNotNull(subject);
 
         assertTrue(subject.hasMoreElements());

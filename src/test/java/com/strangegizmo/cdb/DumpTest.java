@@ -17,25 +17,10 @@ import static org.junit.Assert.assertEquals;
  * tests if Dump produces our example Make file
  */
 public class DumpTest {
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
-
-    private File cdb;
-
-    @Before
-    public void createCdbFile() throws IOException {
-        cdb = temp.newFile("test.cdb");
-        OutputStream out = new FileOutputStream(cdb);
-        InputStream cdbStream = DumpTest.class.getResourceAsStream("/test.cdb");
-        // copy
-        IOUtils.copy(cdbStream, out);
-        out.flush();
-        out.close();
-    }
 
     @Test
     public void testDump() throws IOException {
-        Enumeration elements = Cdb.elements(cdb.getAbsolutePath());
+        Enumeration elements = Cdb.elements(DumpTest.class.getResourceAsStream("/test.cdb"));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(outputStream, true, "US-ASCII");
         Dump.dump(elements, out);

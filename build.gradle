@@ -1,14 +1,18 @@
 plugins {
-    id 'java'
+    id 'application'
     id 'maven-publish'
     id 'checkstyle'
-    id "com.github.spotbugs" version "2.0.0"
+    id "com.github.spotbugs" version "3.0.0"
     id 'jacoco'
-    id 'org.sonarqube' version '2.7.1'
+    id 'org.sonarqube' version '2.8'
 }
 
 version = '1.0.6'
 group = 'com.asteroid.duck'
+
+application {
+    mainClassName = 'CdbRunner'
+}
 
 // use maven central to get JARs
 repositories {
@@ -16,6 +20,11 @@ repositories {
 }
 
 // dependencies
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 dependencies {
     testCompile 'junit:junit:4.+'
     testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
@@ -31,6 +40,7 @@ jar {
 
 spotbugs {
     effort = 'max'
+    ignoreFailures = true
 }
 
 tasks.withType(com.github.spotbugs.SpotBugsTask) {

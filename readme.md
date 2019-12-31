@@ -15,10 +15,13 @@ to a Java environment without the need for a JNI library.
 
 More cdb information can be found at D.J. Bernstein's home page:
 [http://cr.yp.to/cdb.html](http://cr.yp.to/cdb.html). Please do **not** send sg-cdb questions to
-Mr. Bernstein.  He is not the maintainer of this implementation.
+Mr. Bernstein.  He is not the maintainer of this implementation. A nice (with pictures) description
+of the format exists on [UnixUser.org](http://www.unixuser.org/~euske/doc/cdbinternals/index.html).
 
 See the [sg-cdb product page](http://www.strangeGizmo.com/products/sg-cdb/) 
 on the strangeGizmo.com site for more information on the basis of this fork.
+
+This fork improves on the original by using Memory mapped NIO.
 
 Continuous integration builds are performed by [Travis-CI](https://travis-ci.org/duckAsteroid/sg-cdb) [![Build Status](https://travis-ci.org/duckAsteroid/sg-cdb.svg?branch=master)](https://travis-ci.org/duckAsteroid/sg-cdb)
 

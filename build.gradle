@@ -5,7 +5,6 @@ plugins {
     id "com.github.spotbugs" version "3.0.0"
     id 'jacoco'
     id 'org.sonarqube' version '2.8'
-    id 'com.jfrog.bintray' version "1.8.4"
 }
 
 version = '1.0.6'
@@ -64,19 +63,4 @@ sonarqube {
         property 'sonar.host.url', 'https://sonarcloud.io'
         property 'sonar.login', System.getenv("SONARQUBE_KEY")
     }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    pkg {
-        repo = 'maven'
-        userOrg = 'duck-asteroid'
-        name = project.name
-        licenses = ['BSD 3-Clause']
-        vcsUrl = 'https://github.com/bintray/gradle-bintray-plugin.git'
-    }
-    publish = true // Whether version should be auto published after an upload
-    override = true // Whether to override version artifacts already published
-    publications = ['maven']
 }

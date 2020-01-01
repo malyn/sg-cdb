@@ -29,8 +29,32 @@ Software metrics are tracked via [SonarQube](https://sonarcloud.io/dashboard?id=
 
 Security vulnerabilities via [Snyk](https://snyk.io/) [![Known Vulnerabilities](https://snyk.io/test/github/duckAsteroid/sg-cdb/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/duckAsteroid/sg-cdb?targetFile=build.gradle)
 
+Released JAR files are available via [![](https://jitpack.io/v/duckAsteroid/sg-cdb.svg)](https://jitpack.io/#duckAsteroid/sg-cdb)
+
+To add this to your `build.gradle`:
+
+Add it in your root build.gradle at the end of repositories:
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+Step 2. Add the dependency
+```groovy
+dependencies {
+        implementation 'com.github.duckAsteroid:sg-cdb:1.0.6'
+}
+```
+
 Change List
 ========================================================================
+1.0.6
+-----
+-   Build tools and release chain changes only
+
 1.0.5
 -----
 -   Upgraded to use Gradle build tools.

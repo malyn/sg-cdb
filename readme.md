@@ -45,7 +45,7 @@ allprojects {
 Step 2. Add the dependency
 ```groovy
 dependencies {
-        implementation 'com.github.duckAsteroid:sg-cdb:1.0.6'
+        implementation 'com.github.duckAsteroid:sg-cdb:v1.0.6'
 }
 ```
 

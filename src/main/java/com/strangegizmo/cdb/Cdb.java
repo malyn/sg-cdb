@@ -35,6 +35,12 @@ package com.strangegizmo.cdb;
 /* Java imports. */
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * CDB implements a Java interface to D.&nbsp;J.&nbsp;Bernstein's CDB
@@ -43,20 +49,37 @@ import java.io.*;
  * @author Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * @version 1.0.3
  */
-public class Cdb {
+public class Cdb implements AutoCloseable {
+    static class SlotEntry {
+        public final int position;
+        public final int length;
+
+        SlotEntry(int position, int length) {
+            this.position = position;
+            this.length = length;
+        }
+
+        SlotEntry(ByteBuffer byteBuffer) {
+            this.position = byteBuffer.getInt();
+            this.length = byteBuffer.getInt();
+        }
+    }
+
     public static final int HASHTABLE_LENGTH = 2048;
+    public static final long BIT_MASK_32 = 0x00000000ffffffffL;
+
     /**
      * The RandomAccessFile for the CDB file.
      */
     private RandomAccessFile file = null;
+    private final FileChannel fileChannel;
 
     /**
      * The slot pointers, cached here for efficiency as we do not have
      * mmap() to do it for us.  These entries are paired as (pos, len)
      * tuples.
      */
-    private int[] slotTable = null;
-
+    private final SlotEntry[] slotTable = new SlotEntry[257];
 
     /**
      * The number of hash slots searched under this key.
@@ -108,34 +131,21 @@ public class Cdb {
     public Cdb(File cdbFile) throws IOException {
         /* Open the CDB file. */
         file = new RandomAccessFile(cdbFile, "r");
+        fileChannel = file.getChannel();
 
 		/* Read and parse the slot table.  We do not throw an exception
 		 * if this fails; the file might empty, which is not an error. */
-        try {
-			/* Read the table. */
-            byte[] table = new byte[2048];
-            file.readFully(table);
+        if (fileChannel.size() > 2048) {
+            /* Read the table. */
+            ByteBuffer slotTableBuffer = ByteBuffer.allocateDirect(2048).order(ByteOrder.LITTLE_ENDIAN);
+            int read = fileChannel.read(slotTableBuffer);
+            if (read < 2048) throw new IOException("Unable to read slot table");
+            slotTableBuffer.flip();
 
-			/* Create and parse the slot table. */
-            slotTable = new int[256 * 2];
-
-            int offset = 0;
+            /* Create and parse the slot table. */
             for (int i = 0; i < 256; i++) {
-                int pos = table[offset++] & 0xff
-                        | ((table[offset++] & 0xff) << 8)
-                        | ((table[offset++] & 0xff) << 16)
-                        | ((table[offset++] & 0xff) << 24);
-
-                int len = table[offset++] & 0xff
-                        | ((table[offset++] & 0xff) << 8)
-                        | ((table[offset++] & 0xff) << 16)
-                        | ((table[offset++] & 0xff) << 24);
-
-                slotTable[i << 1] = pos;
-                slotTable[(i << 1) + 1] = len;
+                slotTable[i] = new SlotEntry(slotTableBuffer);
             }
-        } catch (IOException ignored) {
-            slotTable = null;
         }
     }
 
@@ -167,8 +177,8 @@ public class Cdb {
         for (int i = 0; i < key.length; i++) {
 //			h = ((h << 5) + h) ^ key[i];
             long l = h << 5;
-            h += (l & 0x00000000ffffffffL);
-            h = (h & 0x00000000ffffffffL);
+            h += (l & BIT_MASK_32);
+            h = (h & BIT_MASK_32);
 
             int k = key[i];
             k = (k + 0x100) & 0xff;
@@ -177,7 +187,7 @@ public class Cdb {
         }
 
 		/* Return the hash value. */
-        return (int) (h & 0x00000000ffffffffL);
+        return (int) (h & BIT_MASK_32);
     }
 
 
@@ -220,11 +230,11 @@ public class Cdb {
             int u = hash(key);
 
 			/* Unpack the information for this record. */
-            int slot = u & 255;
-            hslots = slotTable[(slot << 1) + 1];
+            SlotEntry slot = slotTable[u % 256];
+            hslots = slot.length;
             if (hslots == 0)
                 return null;
-            hpos = slotTable[slot << 1];
+            hpos = slot.position;
 
 			/* Store the hash value. */
             khash = u;
@@ -312,25 +322,19 @@ public class Cdb {
         return null;
     }
 
-    public static CdbElementEnumeration elements(final InputStream input) throws IOException {
-        /* Open the data file. */
-        final InputStream in = new BufferedInputStream(input);
-
+    public static CdbElementEnumeration elements(final SeekableByteChannel input) throws IOException {
+        ByteBuffer eodBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        int read = input.read(eodBuffer);
+        eodBuffer.flip();
         /* Read the end-of-data value. */
-        final int eod = (in.read() & 0xff)
-                | ((in.read() & 0xff) << 8)
-                | ((in.read() & 0xff) << 16)
-                | ((in.read() & 0xff) << 24);
+        final int eod = eodBuffer.getInt();
 
         /* Skip the rest of the hashtable. */
-        long skipped = in.skip(HASHTABLE_LENGTH - 4);
-        if (skipped != (long)(HASHTABLE_LENGTH - 4)) {
-            throw new IOException("Unable to skip hashtable in file. File too short!");
-        }
+        long skipped = HASHTABLE_LENGTH - 4;
+        input.position(input.position() + skipped);
 
         /* Return the Enumeration. */
-        return new CdbElementEnumeration(in, eod);
-
+        return new CdbElementEnumeration(input, eod);
     }
 
     /**
@@ -345,7 +349,7 @@ public class Cdb {
      */
     public static CdbElementEnumeration elements(final String filepath)
             throws IOException {
-		return elements(new FileInputStream(filepath));
+		return elements(Files.newByteChannel(Paths.get(filepath)));
     }
 
 }

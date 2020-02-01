@@ -34,6 +34,7 @@ package cdb;
 
 /* Java imports. */
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -74,19 +75,25 @@ public class Dump {
         while (e.hasMoreElements())  {
 				/* Get the element and its component parts. */
             CdbElement element = e.nextElement();
-            byte[] key = element.getKey();
-            byte[] data = element.getData();
+            ByteBuffer key = element.getKey();
+            ByteBuffer data = element.getData();
 
 				/* Write the line directly to stdout to avoid any
 				 * charset conversion that System.print() might want to
 				 * perform. */
-			String header = "+" + key.length + "," + data.length + ":";
+			String header = "+" + key.capacity() + "," + data.capacity() + ":";
 			byte[] headerBytes = header.getBytes(Charset.forName("US-ASCII"));
             out.write(headerBytes);
-            out.write(key);
+            for(int i =0; i < key.capacity(); i++) {
+            	byte b = key.get(i);
+				out.write(b);
+			}
             out.write('-');
             out.write('>');
-            out.write(data);
+			for(int i =0; i < data.capacity(); i++) {
+				byte b = data.get(i);
+				out.write(b);
+			}
             out.write('\n');
         }
         out.write('\n');

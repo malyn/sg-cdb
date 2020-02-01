@@ -32,6 +32,8 @@
 
 package com.strangegizmo.cdb;
 
+import java.nio.ByteBuffer;
+
 /**
  * CdbElement represents a single element in a constant database.
  *
@@ -42,12 +44,12 @@ public final class CdbElement {
     /**
      * The key value for this element.
      */
-    private final byte[] key;
+    private final ByteBuffer key;
 
     /**
      * The data value for this element.
      */
-    private final byte[] data;
+    private final ByteBuffer data;
 
 
     /**
@@ -57,9 +59,9 @@ public final class CdbElement {
      * @param key  The key value for this element.
      * @param data The data value for this element.
      */
-    public CdbElement(byte[] key, byte[] data) {
-        this.key = key;
-        this.data = data;
+    public CdbElement(ByteBuffer key, ByteBuffer data) {
+        this.key = key.clear();
+        this.data = data.clear();
     }
 
 
@@ -68,7 +70,7 @@ public final class CdbElement {
      *
      * @return This element's key.
      */
-    public byte[] getKey() {
+    public ByteBuffer getKey() {
         return key;
     }
 
@@ -77,7 +79,7 @@ public final class CdbElement {
      *
      * @return This element's data.
      */
-    public byte[] getData() {
+    public ByteBuffer getData() {
         return data;
     }
 }

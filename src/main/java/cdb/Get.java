@@ -74,7 +74,9 @@ public class Get {
 		} while (skip-- != 0);
 
 		// Display the data.
-		System.out.println(data.asCharBuffer());
+		while(data.hasRemaining()) {
+			System.out.write(data.get());
+		}
 		System.out.flush();
 	}
 }

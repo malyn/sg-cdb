@@ -60,8 +60,8 @@ public final class CdbElement {
      * @param data The data value for this element.
      */
     public CdbElement(ByteBuffer key, ByteBuffer data) {
-        this.key = key.clear();
-        this.data = data.clear();
+        this.key = (ByteBuffer) key.clear();
+        this.data = (ByteBuffer) data.clear();
     }
 
 

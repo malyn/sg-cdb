@@ -76,7 +76,7 @@ public class CdbElementEnumeration implements Enumeration<CdbElement>, Closeable
             off += count;
         }
         pos += len;
-        return buffer.flip();
+        return (ByteBuffer) buffer.flip();
     }
 
 

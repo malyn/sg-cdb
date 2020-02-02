@@ -1,0 +1,12 @@
+plugins {
+    id 'application'
+}
+description "Command line utilities for working with CDB files"
+
+application {
+    mainClassName = 'cdb.Main'
+}
+
+dependencies {
+    compile project(':library')
+}

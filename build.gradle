@@ -1,66 +1,76 @@
-plugins {
-    id 'application'
-    id 'maven-publish'
-    id 'checkstyle'
-    id "com.github.spotbugs" version "3.0.0"
-    id 'jacoco'
-    id 'org.sonarqube' version '2.8'
-}
-
-version = '1.0.6'
-group = 'com.asteroid.duck'
-
-application {
-    mainClassName = 'CdbRunner'
-}
-
-// use maven central to get JARs
-repositories {
-    mavenCentral()
-}
-
-// dependencies
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-dependencies {
-    testCompile 'junit:junit:4.+'
-    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
-}
-
-spotbugs {
-    effort = 'max'
-    ignoreFailures = true
-}
-
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    reports {
-        html {
-            enabled = true
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
         }
-        xml {
-            enabled = false
+    }
+    dependencies {
+        classpath "com.github.spotbugs:spotbugs-gradle-plugin:3.0.0"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
+    apply plugin: "com.github.spotbugs"
+    apply plugin: 'org.sonarqube'
+
+    version = '1.0.6'
+    group = 'com.asteroid.duck.sg-cdb'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    repositories {
+        // use maven central to get JARs
+        mavenCentral()
+    }
+
+    // dependencies
+    dependencies {
+        testCompile 'junit:junit:4.+'
+        testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+    }
+
+    spotbugs {
+        effort = 'max'
+        ignoreFailures = true
+    }
+
+    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        reports {
+            html {
+                enabled = true
+            }
+            xml {
+                enabled = false
+            }
+        }
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+                group project.group
+                version project.version
+            }
+        }
+    }
+
+
+    sonarqube {
+        properties {
+            property 'sonar.organization', 'duckasteroid-github'
+            property 'sonar.host.url', 'https://sonarcloud.io'
+            property 'sonar.login', System.getenv("SONARQUBE_KEY")
         }
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            group project.group
-            version project.version
-        }
-    }
-}
 
-
-sonarqube {
-    properties {
-        property 'sonar.organization', 'duckasteroid-github'
-        property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.login', System.getenv("SONARQUBE_KEY")
-    }
-}

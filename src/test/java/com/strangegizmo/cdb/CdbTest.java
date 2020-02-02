@@ -38,21 +38,21 @@ public class CdbTest {
     @Test
     public void find() throws IOException {
         Cdb subject = new Cdb(cdb);
-        byte[] result = subject.find("one".getBytes());
-        String strResult = new String(result);
+        ByteBuffer result = subject.find(ByteBuffer.wrap("one".getBytes(StandardCharsets.US_ASCII)));
+        String strResult = StandardCharsets.US_ASCII.decode(result).toString();
         assertEquals("Hello", strResult);
 
-        result = subject.find("two".getBytes());
-        strResult = new String(result);
+        result = subject.find(ByteBuffer.wrap("two".getBytes()));
+        strResult = StandardCharsets.US_ASCII.decode(result).toString();
         assertEquals("Goodbye", strResult);
     }
 
     @Test
     public void findNext() throws IOException {
         Cdb subject = new Cdb(cdb);
-        final byte[] key ="one".getBytes();
-        byte[] bytes = subject.findnext(key);
-        assertEquals("Hello", new String(bytes));
+        final ByteBuffer key = ByteBuffer.wrap("one".getBytes(StandardCharsets.US_ASCII));
+        ByteBuffer bytes = subject.findnext(key);
+        assertEquals("Hello", StandardCharsets.US_ASCII.decode(bytes).toString());
 
         bytes = subject.findnext(key);
         assertNull(bytes);

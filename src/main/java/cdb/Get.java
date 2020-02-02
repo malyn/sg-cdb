@@ -35,7 +35,9 @@ package cdb;
 /* strangeGizmo imports. */
 import com.strangegizmo.cdb.*;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * The cdb.Get program is a command-line tool which is used to retrieve
@@ -55,24 +57,24 @@ public class Get {
 
 		// Parse the arguments.
 		String file = args[0];
-		byte[] key = args[1].getBytes(Charset.forName("US-ASCII"));
+		ByteBuffer key = ByteBuffer.wrap(args[1].getBytes(StandardCharsets.US_ASCII));
 		int skip = 0;
 		if (args.length == 3)
 			skip = Integer.parseInt(args[2]);
 
 		// Create the Cdb object.
 		Cdb cdb = new Cdb(file);
-		cdb.findstart(key);
+		cdb.findstart();
 
 		// Fetch the data.
-		byte[] data;
+		ByteBuffer data;
 		do {
 			data = cdb.findnext(key);
 			if (data == null ) return;
 		} while (skip-- != 0);
 
 		// Display the data.
-		System.out.write(data);
+		System.out.println(data.asCharBuffer());
 		System.out.flush();
 	}
 }

@@ -68,6 +68,37 @@ public class Cdb implements AutoCloseable {
     public static final int HASHTABLE_LENGTH = 2048;
     public static final long BIT_MASK_32 = 0x00000000ffffffffL;
 
+    @Deprecated
+    public static final int hash(byte[] key) {
+        return hash(ByteBuffer.wrap(key));
+    }
+    /**
+     * Computes and returns the hash value for the given key.
+     *
+     * @param key The key to compute the hash value for.
+     * @return The hash value of <code>key</code>.
+     */
+    public static final int hash(ByteBuffer key) {
+        /* Initialize the hash value. */
+        long h = 5381;
+
+        /* Add each byte to the hash value. */
+        while (key.hasRemaining()) {
+//			h = ((h << 5) + h) ^ key[i];
+            long l = h << 5;
+            h += (l & BIT_MASK_32);
+            h = (h & BIT_MASK_32);
+
+            int k = key.get();
+            k = (k + 0x100) & 0xff;
+
+            h = h ^ k;
+        }
+        key.flip();
+        /* Return the hash value. */
+        return (int) (h & BIT_MASK_32);
+    }
+
     /**
      * The RandomAccessFile for the CDB file.
      */
@@ -162,41 +193,10 @@ public class Cdb implements AutoCloseable {
         }
     }
 
-
     /**
-     * Computes and returns the hash value for the given key.
-     *
-     * @param key The key to compute the hash value for.
-     * @return The hash value of <code>key</code>.
+     * Prepares the class to search for the given key
      */
-    static final int hash(byte[] key) {
-		/* Initialize the hash value. */
-        long h = 5381;
-
-		/* Add each byte to the hash value. */
-        for (int i = 0; i < key.length; i++) {
-//			h = ((h << 5) + h) ^ key[i];
-            long l = h << 5;
-            h += (l & BIT_MASK_32);
-            h = (h & BIT_MASK_32);
-
-            int k = key[i];
-            k = (k + 0x100) & 0xff;
-
-            h = h ^ k;
-        }
-
-		/* Return the hash value. */
-        return (int) (h & BIT_MASK_32);
-    }
-
-
-    /**
-     * Prepares the class to search for the given key.
-     *
-     * @param key The key to search for.
-     */
-    public synchronized final void findstart(byte[] key) {
+    public synchronized final void findstart() {
         loop = 0;
     }
 
@@ -207,8 +207,8 @@ public class Cdb implements AutoCloseable {
      * @return The record store under the given key, or
      * <code>null</code> if no record with that key could be found.
      */
-    public final synchronized byte[] find(byte[] key) {
-        findstart(key);
+    public final synchronized ByteBuffer find(ByteBuffer key) {
+        findstart();
         return findnext(key);
     }
 
@@ -219,7 +219,7 @@ public class Cdb implements AutoCloseable {
      * @return The next record store under the given key, or
      * <code>null</code> if no record with that key could be found.
      */
-    public final synchronized byte[] findnext(byte[] key) {
+    public final synchronized ByteBuffer findnext(ByteBuffer key) {
 		/* There are no keys if we could not read the slot table. */
         if (slotTable == null)
             return null;
@@ -248,19 +248,15 @@ public class Cdb implements AutoCloseable {
 
 		/* Search all of the hash slots for this key. */
         try {
+            ByteBuffer local = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
             while (loop < hslots) {
 				/* Read the entry for this key from the hash slot. */
-                file.seek(kpos);
+                fileChannel.position(kpos);
+                fileChannel.read(local);
+                local.flip();
 
-                int h = file.readUnsignedByte()
-                        | (file.readUnsignedByte() << 8)
-                        | (file.readUnsignedByte() << 16)
-                        | (file.readUnsignedByte() << 24);
-
-                int pos = file.readUnsignedByte()
-                        | (file.readUnsignedByte() << 8)
-                        | (file.readUnsignedByte() << 16)
-                        | (file.readUnsignedByte() << 24);
+                int h = local.getInt();
+                int pos = local.getInt();
                 if (pos == 0)
                     return null;
 
@@ -279,39 +275,31 @@ public class Cdb implements AutoCloseable {
 
 				/* Get the length of the key and data in this hash slot
 				 * entry. */
-                file.seek(pos);
+                fileChannel.position(pos);
+                local.clear();
+                fileChannel.read(local);
+                local.flip();
 
-                int klen = file.readUnsignedByte()
-                        | (file.readUnsignedByte() << 8)
-                        | (file.readUnsignedByte() << 16)
-                        | (file.readUnsignedByte() << 24);
-                if (klen != key.length)
+                int klen = local.getInt();
+                if (klen != key.remaining())
                     continue;
 
-                int dlen = file.readUnsignedByte()
-                        | (file.readUnsignedByte() << 8)
-                        | (file.readUnsignedByte() << 16)
-                        | (file.readUnsignedByte() << 24);
+                int dlen = local.getInt();
 
 				/* Read the key stored in this entry and compare it to
 				 * the key we were given. */
-                boolean match = true;
-                byte[] k = new byte[klen];
-                file.readFully(k);
-                for (int i = 0; i < k.length; i++) {
-                    if (k[i] != key[i]) {
-                        match = false;
-                        break;
-                    }
-                }
+                ByteBuffer k = ByteBuffer.allocate(klen);
+                fileChannel.read(k);
+                k.flip();
 
 				/* No match; check the next slot. */
-                if (!match)
+                if (!key.equals(k))
                     continue;
 
 				/* The keys match, return the data. */
-                byte[] d = new byte[dlen];
-                file.readFully(d);
+                ByteBuffer d = ByteBuffer.allocate(dlen);
+                fileChannel.read(d);
+                d.flip();
                 return d;
             }
         } catch (IOException ignored) {

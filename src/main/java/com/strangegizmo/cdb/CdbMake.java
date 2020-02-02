@@ -35,6 +35,7 @@ package com.strangegizmo.cdb;
 /* Java imports. */
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -449,7 +450,7 @@ public final class CdbMake {
 
 			/* Add the key/data pair to the database if it is not in
 			 * ignoreCdb. */
-            if ((ignoreCdb == null) || (ignoreCdb.find(data) == null))
+            if ((ignoreCdb == null) || (ignoreCdb.find(ByteBuffer.wrap(data)) == null))
                 cdbMake.add(key, data);
 
 			/* Read the terminating LF. */

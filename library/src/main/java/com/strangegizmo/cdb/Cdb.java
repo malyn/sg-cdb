@@ -53,7 +53,7 @@ import java.nio.file.Paths;
  */
 public class Cdb implements AutoCloseable {
     public static final int HASHTABLE_LENGTH = 2048;
-    public static final long BIT_MASK_32 = 0x00000000ffffffffL;
+
     private final FileChannel fileChannel;
     /**
      * The slot pointers, cached here for efficiency as we do not have
@@ -72,7 +72,7 @@ public class Cdb implements AutoCloseable {
     /**
      * The hash value for the current key.
      */
-    private int khash = 0;
+    private long khash = 0;
     /**
      * The number of hash slots in the hash table for the current key.
      */
@@ -80,11 +80,11 @@ public class Cdb implements AutoCloseable {
     /**
      * The position of the hash table for the current key
      */
-    private int hpos = 0;
+    private long hpos = 0;
     /**
      * The position of the current key in the slot.
      */
-    private int kpos = 0;
+    private long kpos = 0;
 
 
     /**
@@ -129,7 +129,7 @@ public class Cdb implements AutoCloseable {
     }
 
     @Deprecated
-    public static int hash(byte[] key) {
+    public static long hash(byte[] key) {
         return hash(ByteBuffer.wrap(key));
     }
 
@@ -139,25 +139,8 @@ public class Cdb implements AutoCloseable {
      * @param key The key to compute the hash value for.
      * @return The hash value of <code>key</code>.
      */
-    public static int hash(ByteBuffer key) {
-        /* Initialize the hash value. */
-        long h = 5381;
-
-        /* Add each byte to the hash value. */
-        while (key.hasRemaining()) {
-//			h = ((h << 5) + h) ^ key[i];
-            long l = h << 5;
-            h += (l & BIT_MASK_32);
-            h = (h & BIT_MASK_32);
-
-            int k = key.get();
-            k = (k + 0x100) & 0xff;
-
-            h = h ^ k;
-        }
-        key.flip();
-        /* Return the hash value. */
-        return (int) (h & BIT_MASK_32);
+    public static long hash(ByteBuffer key) {
+        return CdbHash.hash(key);
     }
 
     public static CdbElementEnumeration elements(final SeekableByteChannel input) throws IOException {
@@ -236,10 +219,11 @@ public class Cdb implements AutoCloseable {
         /* Locate the hash entry if we have not yet done so. */
         if (loop == 0) {
             /* Get the hash value for the key. */
-            int u = hash(key);
-
+            long u = CdbHash.hash(key);
+            key.clear();
             /* Unpack the information for this record. */
-            SlotEntry slot = slotTable[u % 256];
+            int index = (int)(u % 256);
+            SlotEntry slot = slotTable[index];
             hslots = slot.length;
             if (hslots == 0)
                 return null;

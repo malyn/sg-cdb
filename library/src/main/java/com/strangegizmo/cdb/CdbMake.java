@@ -315,7 +315,7 @@ public final class CdbMake {
         for (int i = 0; i < 256; i++)
             tableCount[i] = 0;
 
-        /* Open the temporary CdbRunner file. */
+        /* Open the temporary CDB file. */
         file = new RandomAccessFile(filepath, "rw");
 
         /* Seek to the end of the header. */
@@ -346,11 +346,11 @@ public final class CdbMake {
 
 
         /* Add the hash pointer to our list. */
-        int hash = Cdb.hash(key);
+        long hash = Cdb.hash(key);
         hashPointers.add(new CdbHashPointer(hash, pos));
 
         /* Add this item to the count. */
-        tableCount[hash & 0xff]++;
+        tableCount[(int)(hash & 0xff)]++;
 
 
         /* Update the file position pointer. */
@@ -377,7 +377,7 @@ public final class CdbMake {
         CdbHashPointer[] slotPointers
                 = new CdbHashPointer[hashPointers.size()];
         for (CdbHashPointer hp : hashPointers) {
-            slotPointers[--tableStart[hp.hash & 0xff]] = hp;
+            slotPointers[--tableStart[(int)(hp.hash & 0xff)]] = hp;
         }
 
         /* Write out each of the hash tables, building the slot table in
@@ -405,7 +405,7 @@ public final class CdbMake {
                 CdbHashPointer hp = slotPointers[curSlotPointer++];
 
                 /* Locate a free space in the hash table. */
-                int where = (hp.hash >>> 8) % len;
+                int where = (int)((hp.hash >>> 8) % len);
                 while (hashTable[where] != null)
                     if (++where == len)
                         where = 0;
@@ -418,7 +418,7 @@ public final class CdbMake {
             for (int u = 0; u < len; u++) {
                 CdbHashPointer hp = hashTable[u];
                 if (hp != null) {
-                    writeLeInt(hashTable[u].hash);
+                    writeLeInt((int)(hashTable[u].hash));
                     writeLeInt(hashTable[u].pos);
                 } else {
                     writeLeInt(0);
@@ -473,7 +473,7 @@ class CdbHashPointer {
     /**
      * The hash value of this entry.
      */
-    final int hash;
+    final long hash;
 
     /**
      * The position in the constant database of this entry.
@@ -488,7 +488,7 @@ class CdbHashPointer {
      * @param hash The hash value for this hash pointer.
      * @param pos  The position of this entry in the constant database.
      */
-    CdbHashPointer(int hash, int pos) {
+    CdbHashPointer(long hash, int pos) {
         this.hash = hash;
         this.pos = pos;
     }

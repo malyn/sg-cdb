@@ -98,7 +98,7 @@ public class CdbTest {
             while (line != null) {
                 String[] split = line.split(",");
                 byte[] key = decoder.decode(split[0]);
-                int expected = Integer.parseInt(split[1]);
+                long expected = Long.parseLong(split[1]);
                 assertEquals(expected, Cdb.hash(key));
                 line = reader.readLine();
             }

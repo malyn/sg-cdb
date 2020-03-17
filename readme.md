@@ -26,6 +26,12 @@ Software metrics are tracked via [SonarQube](https://sonarcloud.io/dashboard?id=
 
 Security vulnerabilities via [Snyk](https://snyk.io/) [![Known Vulnerabilities](https://snyk.io/test/github/duckAsteroid/sg-cdb/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/duckAsteroid/sg-cdb?targetFile=build.gradle)
 
+Contributing
+=========================================================================
+Pull requests welcome, see GitHub issues for outstanding items.
+
+Note this project is [![Ready-to-Code on GitPod](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/malyn/sg-cdb) 
+
 Change List
 ========================================================================
 1.0.5

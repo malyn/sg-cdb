@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'checkstyle'
+    id "com.github.spotbugs" version "2.0.0"
+    id 'jacoco'
+    id 'org.sonarqube' version '2.7.1'
+}
+
+version = '1.0.6'
+group = 'com.asteroid.duck'
+
+// use maven central to get JARs
+repositories {
+    mavenCentral()
+}
+
+// dependencies
+dependencies {
+    testCompile 'junit:junit:4.+'
+    testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'cdb.main'
+        )
+    }
+}
+
+spotbugs {
+    effort = 'max'
+}
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+    reports {
+        html {
+            enabled = true
+        }
+        xml {
+            enabled = false
+        }
+    }
+}
+
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+
+sonarqube {
+    properties {
+        property 'sonar.organization', 'duckasteroid-github'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.login', System.getenv("SONARQUBE_KEY")
+    }
+}

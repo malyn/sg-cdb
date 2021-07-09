@@ -1,6 +1,5 @@
-classes
-doc
-releases
-*.jar
-*.pyc
-*.pyo
+build/
+out/
+.idea/
+.gradle/
+*.iml

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000-2001, Michael Alyn Miller <malyn@strangeGizmo.com>
+ * Copyright (c) 2000-2001, Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,47 +30,54 @@
  * SUCH DAMAGE.
  */
 
-package cdb;
-
-/* strangeGizmo imports. */
-import com.strangegizmo.cdb.*;
+package com.strangegizmo.cdb;
 
 /**
- * The cdb.get program is a command-line tool which is used to retrieve
- * data from a constant database.
+ * CdbElement represents a single element in a constant database.
  *
- * @author		Michael Alyn Miller <malyn@strangeGizmo.com>
- * @version		1.0
+ * @author Michael Alyn Miller &lt;malyn@strangeGizmo.com&gt;
+ * @version 1.0.2
  */
-public class get {
-	public static void main(String[] args) throws Exception {
-		/* Display a usage message if we didn't get the correct number
-		 * of arguments. */
-		if ((args.length < 2) || (args.length > 3)) {
-			System.out.println("cdb.get: usage: cdb.get file key [skip]");
-			return;
-		}
+public final class CdbElement {
+    /**
+     * The key value for this element.
+     */
+    private final byte[] key;
 
-		/* Parse the arguments. */
-		String file = args[0];
-		byte[] key = args[1].getBytes();
-		int skip = 0;
-		if (args.length == 3)
-			skip = Integer.parseInt(args[2]);
+    /**
+     * The data value for this element.
+     */
+    private final byte[] data;
 
-		/* Create the CDB object. */
-		Cdb cdb = new Cdb(file);
-		cdb.findstart(key);
 
-		/* Fetch the data. */
-		byte[] data;
-		do {
-			data = cdb.findnext(key);
-			if (data == null ) return;
-		} while (skip-- != 0);
+    /**
+     * Creates an instance of the CdbElement class and initializes it
+     * with the given key and data values.
+     *
+     * @param key  The key value for this element.
+     * @param data The data value for this element.
+     */
+    public CdbElement(byte[] key, byte[] data) {
+        this.key = key;
+        this.data = data;
+    }
 
-		/* Display the data. */
-		System.out.write(data);
-		System.out.flush();
-	}
+
+    /**
+     * Returns this element's key.
+     *
+     * @return This element's key.
+     */
+    public byte[] getKey() {
+        return key;
+    }
+
+    /**
+     * Returns this element's data.
+     *
+     * @return This element's data.
+     */
+    public byte[] getData() {
+        return data;
+    }
 }

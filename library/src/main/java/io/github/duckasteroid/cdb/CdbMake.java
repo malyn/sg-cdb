@@ -30,7 +30,7 @@
  * SUCH DAMAGE.
  */
 
-package com.strangegizmo.cdb;
+package io.github.duckasteroid.cdb;
 
 /* Java imports. */
 
@@ -346,11 +346,11 @@ public final class CdbMake {
 
 
         /* Add the hash pointer to our list. */
-        long hash = Cdb.hash(key);
+        long hash = Cdb.hash(ByteBuffer.wrap(key));
         hashPointers.add(new CdbHashPointer(hash, pos));
 
         /* Add this item to the count. */
-        tableCount[(int)(hash & 0xff)]++;
+        tableCount[(int) (hash & 0xff)]++;
 
 
         /* Update the file position pointer. */
@@ -377,7 +377,7 @@ public final class CdbMake {
         CdbHashPointer[] slotPointers
                 = new CdbHashPointer[hashPointers.size()];
         for (CdbHashPointer hp : hashPointers) {
-            slotPointers[--tableStart[(int)(hp.hash & 0xff)]] = hp;
+            slotPointers[--tableStart[(int) (hp.hash & 0xff)]] = hp;
         }
 
         /* Write out each of the hash tables, building the slot table in
@@ -405,7 +405,7 @@ public final class CdbMake {
                 CdbHashPointer hp = slotPointers[curSlotPointer++];
 
                 /* Locate a free space in the hash table. */
-                int where = (int)((hp.hash >>> 8) % len);
+                int where = (int) ((hp.hash >>> 8) % len);
                 while (hashTable[where] != null)
                     if (++where == len)
                         where = 0;
@@ -418,7 +418,7 @@ public final class CdbMake {
             for (int u = 0; u < len; u++) {
                 CdbHashPointer hp = hashTable[u];
                 if (hp != null) {
-                    writeLeInt((int)(hashTable[u].hash));
+                    writeLeInt((int) (hashTable[u].hash));
                     writeLeInt(hashTable[u].pos);
                 } else {
                     writeLeInt(0);

@@ -1,4 +1,4 @@
-package com.strangegizmo.cdb;
+package io.github.duckasteroid.cdb;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class CdbElementEnumeration implements Enumeration<CdbElement>, Closeable
 
     /**
      * Returns <code>true</code> if there are more elements in
-     * the constant database (pos < eod); <code>false</code>
+     * the constant database (pos &lt; eod); <code>false</code>
      * otherwise.
      */
     public synchronized boolean hasMoreElements() {

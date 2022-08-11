@@ -31,7 +31,7 @@
  */
 package cdb;
 
-import com.strangegizmo.cdb.Cdb;
+import io.github.duckasteroid.cdb.Cdb;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

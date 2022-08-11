@@ -30,7 +30,7 @@
  * SUCH DAMAGE.
  */
 
-package com.strangegizmo.cdb;
+package io.github.duckasteroid.cdb;
 
 /* Java imports. */
 
@@ -128,6 +128,11 @@ public class Cdb implements AutoCloseable {
         }
     }
 
+    /**
+     * @deprecated Use {@link #hash(ByteBuffer)}
+     * @param key the key to hash
+     * @return the hash value
+     */
     @Deprecated
     public static long hash(byte[] key) {
         return hash(ByteBuffer.wrap(key));

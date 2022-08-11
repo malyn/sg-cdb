@@ -31,8 +31,8 @@
  */
 package cdb;
 
-import com.strangegizmo.cdb.Cdb;
-import com.strangegizmo.cdb.CdbMake;
+import io.github.duckasteroid.cdb.Cdb;
+import io.github.duckasteroid.cdb.CdbMake;
 
 import java.io.IOException;
 

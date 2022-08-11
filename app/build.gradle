@@ -1,4 +1,5 @@
 plugins {
+    id 'duckasteroid'
     id 'application'
 }
 description "Command line utilities for working with CDB files"
@@ -8,5 +9,5 @@ application {
 }
 
 dependencies {
-    compile project(':library')
+    implementation project(':library')
 }

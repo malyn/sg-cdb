@@ -29,11 +29,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
 package cdb;
 
-import com.strangegizmo.cdb.Cdb;
-import com.strangegizmo.cdb.CdbElement;
-import com.strangegizmo.cdb.CdbElementEnumeration;
+import io.github.duckasteroid.cdb.Cdb;
+import io.github.duckasteroid.cdb.CdbElement;
+import io.github.duckasteroid.cdb.CdbElementEnumeration;
 
 import java.io.IOException;
 import java.io.PrintStream;

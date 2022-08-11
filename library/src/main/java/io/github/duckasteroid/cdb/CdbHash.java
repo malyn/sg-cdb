@@ -1,4 +1,4 @@
-package com.strangegizmo.cdb;
+package io.github.duckasteroid.cdb;
 
 import java.nio.ByteBuffer;
 

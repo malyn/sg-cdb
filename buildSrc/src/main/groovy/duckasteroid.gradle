@@ -17,6 +17,16 @@ repositories {
     mavenLocal()
 }
 
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+// Use JUnit for tests
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
 /* Test coverage */
 jacocoTestReport {
     reports {
@@ -83,8 +93,8 @@ publishing {
             from components.java
             pom {
                 name = project.name
-                artifactId = "sg-cdb"
-                description = "CDB Database code ${getProject().path} - derived from SG-CDB by strange gizmo"
+                artifactId = "sg-cdb-${getProject().path.substring(1)}"
+                description = "CDB Database code ${getProject().path.substring(1)} - derived from SG-CDB by strange gizmo"
                 url = "http://duckasteroid.github.io/${rootProject.name}/"
                 licenses {
                     license {

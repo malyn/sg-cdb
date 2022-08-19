@@ -1,23 +1,24 @@
 package io.github.duckasteroid.cdb;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class CdbElementEnumerationTest {
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public static Path temporaryFolder;
 
     @Test
     public void testEnumeration() throws IOException {
-        Path file = temporaryFolder.getRoot().toPath().resolve("test.cdb");
+        Path file = temporaryFolder.resolve("test.cdb");
         Files.copy(CdbElementEnumeration.class.getResourceAsStream("/test.cdb"), file);
         CdbElementEnumeration subject = Cdb.elements(Files.newByteChannel(file));
         assertNotNull(subject);

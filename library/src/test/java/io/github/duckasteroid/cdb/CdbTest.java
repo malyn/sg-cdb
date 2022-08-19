@@ -1,24 +1,25 @@
 package io.github.duckasteroid.cdb;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CdbTest {
-    @Rule
-    public final TemporaryFolder temp = new TemporaryFolder();
+    @TempDir
+    public static Path temp;
 
     private File cdb;
 
@@ -55,9 +56,9 @@ public class CdbTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void createCdbFile() throws IOException {
-        cdb = temp.newFile("test.cdb");
+        cdb = temp.resolve("test.cdb").toFile();
         try (OutputStream out = new FileOutputStream(cdb)) {
             InputStream cdbStream = CdbTest.class.getResourceAsStream("/test.cdb");
             // copy

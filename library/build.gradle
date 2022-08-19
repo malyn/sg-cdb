@@ -4,3 +4,7 @@ plugins {
 }
 
 description "Library classes for working with CDB files"
+
+dependencies {
+    testImplementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+}
